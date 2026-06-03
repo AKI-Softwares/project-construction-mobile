@@ -1,6 +1,5 @@
 import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
 import { useAuthStore } from '@/store/auth.store';
 
 export function ProfileScreen() {
@@ -8,7 +7,7 @@ export function ProfileScreen() {
 
   const handleLogout = () => {
     logout();
-    router.replace('/(auth)/login');
+    // auth guard in app/(app)/_layout.tsx redirects when token → null
   };
 
   return (

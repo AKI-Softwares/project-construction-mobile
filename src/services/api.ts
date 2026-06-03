@@ -24,7 +24,10 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       const { useAuthStore } = require('@/store/auth.store');
-      useAuthStore.getState().logout();
+      const store = useAuthStore.getState();
+      if (store.token) {
+        store.logout();
+      }
     }
     return Promise.reject(error);
   },

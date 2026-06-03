@@ -2,6 +2,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { AxiosError } from 'axios';
 import { router } from 'expo-router';
 import { z } from 'zod';
 import { Button } from '@/components/ui/Button';
@@ -34,8 +35,13 @@ export function LoginScreen() {
       const user = await authService.getMe();
       login(token, user);
       router.replace('/(app)/(tabs)/visits');
-    } catch {
-      Alert.alert('Erro', 'Credenciais inválidas. Verifique e-mail e senha.');
+    } catch (error: unknown) {
+      const status = (error as AxiosError)?.response?.status;
+      if (status === 401) {
+        Alert.alert('Erro', 'Credenciais inválidas. Verifique e-mail e senha.');
+      } else {
+        Alert.alert('Erro de conexão', 'Não foi possível conectar ao servidor. Tente novamente.');
+      }
     }
   };
 
