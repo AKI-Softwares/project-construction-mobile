@@ -28,7 +28,7 @@ const queryClient = new QueryClient({
 });
 
 export default function RootLayout() {
-  const [sansLoaded] = usePlexSans({
+  const [sansLoaded, sansError] = usePlexSans({
     IBMPlexSans_300Light,
     IBMPlexSans_400Regular,
     IBMPlexSans_500Medium,
@@ -36,19 +36,20 @@ export default function RootLayout() {
     IBMPlexSans_700Bold,
   });
 
-  const [monoLoaded] = usePlexMono({
+  const [monoLoaded, monoError] = usePlexMono({
     IBMPlexMono_400Regular,
     IBMPlexMono_500Medium,
     IBMPlexMono_600SemiBold,
   });
 
+  const fontError = sansError ?? monoError;
   const loaded = sansLoaded && monoLoaded;
 
   useEffect(() => {
-    if (loaded) SplashScreen.hideAsync();
-  }, [loaded]);
+    if (loaded || fontError) SplashScreen.hideAsync().catch(() => {});
+  }, [loaded, fontError]);
 
-  if (!loaded) return null;
+  if (!loaded && !fontError) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
