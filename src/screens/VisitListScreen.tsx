@@ -171,7 +171,7 @@ export function VisitListScreen() {
           renderItem={({ item }) => (
             <VisitCard
               visit={item}
-              onPress={() => router.push(`/(app)/visits/${item.id}` as any)}
+              onPress={() => router.push(`/(app)/visits/${String(item.id)}` as any)}
             />
           )}
           ListEmptyComponent={

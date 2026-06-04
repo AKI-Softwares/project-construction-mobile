@@ -7,6 +7,7 @@ interface Props {
 }
 
 export function VisitStatusBadge({ status }: Props) {
+  // runtime fallback if server returns an unknown status not yet in the enum
   const config = VisitStatusConfig[status] ?? VisitStatusConfig.NOT_STARTED;
   return (
     <Badge
