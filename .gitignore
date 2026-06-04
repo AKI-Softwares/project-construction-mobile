@@ -5,3 +5,10 @@ docs/
 node_modules
 
 .env.local
+
+.claude-flow
+.swarm
+
+CLAUDE.md
+.mcp.json
+.clauderc
