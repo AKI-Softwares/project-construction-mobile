@@ -4,6 +4,11 @@ module.exports = function (api) {
     presets: [
       ['babel-preset-expo', { jsxImportSource: 'nativewind' }],
     ],
-    plugins: ['react-native-reanimated/plugin'],
+    plugins: [
+      // Force private field transpilation for node_modules (reanimated 4.x / worklets use #field syntax)
+      ['@babel/plugin-transform-class-properties', { loose: true }],
+      ['@babel/plugin-transform-private-methods', { loose: true }],
+      'react-native-reanimated/plugin',
+    ],
   };
 };
