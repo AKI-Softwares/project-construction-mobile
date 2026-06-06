@@ -3,11 +3,4 @@ const { withNativeWind } = require('nativewind/metro');
 
 const config = getDefaultConfig(__dirname);
 
-const nativeWindConfig = withNativeWind(config, { input: './global.css' });
-
-// react-native-worklets ships private class fields (#) — must be transpiled, not bundled raw
-nativeWindConfig.transformer.transformIgnorePatterns = [
-  /node_modules\/(?!(react-native|@react-native|react-native-worklets|react-native-reanimated|expo|@expo|@unimodules|nativewind|react-native-css-interop|react-native-safe-area-context|react-native-screens|react-native-gesture-handler)\/)/,
-];
-
-module.exports = nativeWindConfig;
+module.exports = withNativeWind(config, { input: './global.css' });
