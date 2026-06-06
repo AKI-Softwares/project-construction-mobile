@@ -32,7 +32,7 @@ export function LoginScreen() {
   const onSubmit = async (data: FormData) => {
     try {
       const { token } = await authService.login(data);
-      const user = await authService.getMe();
+      const user = await authService.getMe(token);
       login(token, user);
       router.replace('/(app)/(tabs)/visits');
     } catch (error: unknown) {

@@ -6,7 +6,6 @@
     "orientation": "portrait",
     "scheme": "checkobra",
     "userInterfaceStyle": "dark",
-    "icon": "./assets/icon.png",
     "splash": {
       "backgroundColor": "#0F1520"
     },
