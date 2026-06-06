@@ -23,7 +23,7 @@ export function ProfileScreen() {
           <Text className="text-base font-sans-semibold text-t1">{user?.name}</Text>
           <Text className="text-xs text-t2">{user?.email}</Text>
           <Text className="mt-1 font-mono text-[10px] text-t3 uppercase tracking-[0.08em]">
-            {user?.role.name}
+            {user?.role?.name}
           </Text>
         </View>
 

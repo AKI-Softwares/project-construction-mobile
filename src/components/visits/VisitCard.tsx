@@ -34,9 +34,9 @@ export function VisitCard({ visit, onPress }: Props) {
         borderBottomLeftRadius: 0,
         borderTopRightRadius: 6,
         borderBottomRightRadius: 6,
-        paddingHorizontal: 14,
-        paddingVertical: 11,
-        marginBottom: 8,
+        paddingHorizontal: 16,
+        paddingVertical: 14,
+        marginBottom: 10,
       })}
     >
       <View
@@ -51,7 +51,7 @@ export function VisitCard({ visit, onPress }: Props) {
         <Text
           style={{
             color: Colors.t3,
-            fontSize: 10,
+            fontSize: 12,
             fontFamily: 'IBMPlexMono_400Regular',
             letterSpacing: 0.6,
           }}
@@ -62,9 +62,9 @@ export function VisitCard({ visit, onPress }: Props) {
       <Text
         style={{
           color: Colors.t1,
-          fontSize: 13,
+          fontSize: 15,
           fontFamily: 'IBMPlexSans_600SemiBold',
-          marginBottom: 2,
+          marginBottom: 3,
         }}
       >
         {visit.apartment.building.name}
@@ -72,7 +72,7 @@ export function VisitCard({ visit, onPress }: Props) {
       <Text
         style={{
           color: Colors.t2,
-          fontSize: 11,
+          fontSize: 13,
           fontFamily: 'IBMPlexMono_400Regular',
         }}
       >

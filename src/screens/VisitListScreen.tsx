@@ -46,15 +46,15 @@ export function VisitListScreen() {
   return (
     <SafeAreaView className="flex-1 bg-bg1">
       {/* Header */}
-      <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 12 }}>
+      <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: 14 }}>
         <View style={{ flexDirection: 'row' }}>
           <Text
-            style={{ color: Colors.t1, fontSize: 20, fontFamily: 'IBMPlexSans_700Bold' }}
+            style={{ color: Colors.t1, fontSize: 26, fontFamily: 'IBMPlexSans_700Bold' }}
           >
             Check
           </Text>
           <Text
-            style={{ color: Colors.amber, fontSize: 20, fontFamily: 'IBMPlexSans_700Bold' }}
+            style={{ color: Colors.amber, fontSize: 26, fontFamily: 'IBMPlexSans_700Bold' }}
           >
             Obra
           </Text>
@@ -62,7 +62,7 @@ export function VisitListScreen() {
         <Text
           style={{
             color: Colors.t3,
-            fontSize: 9,
+            fontSize: 10,
             fontFamily: 'IBMPlexMono_400Regular',
             letterSpacing: 1.08,
             textTransform: 'uppercase',
@@ -75,9 +75,9 @@ export function VisitListScreen() {
           <Text
             style={{
               color: Colors.t2,
-              fontSize: 12,
+              fontSize: 14,
               fontFamily: 'IBMPlexSans_400Regular',
-              marginTop: 8,
+              marginTop: 10,
             }}
           >
             {getGreeting()}, {user.name}
@@ -90,8 +90,8 @@ export function VisitListScreen() {
         style={{
           flexDirection: 'row',
           gap: 8,
-          paddingHorizontal: 16,
-          marginBottom: 12,
+          paddingHorizontal: 20,
+          marginBottom: 14,
         }}
       >
         {FILTERS.map((f) => {
@@ -101,8 +101,8 @@ export function VisitListScreen() {
               key={f.key}
               onPress={() => setActiveFilter(f.key)}
               style={{
-                paddingHorizontal: 10,
-                paddingVertical: 5,
+                paddingHorizontal: 12,
+                paddingVertical: 7,
                 borderRadius: 4,
                 borderWidth: 1,
                 borderColor: active ? Colors.amber : Colors.border,
@@ -112,7 +112,7 @@ export function VisitListScreen() {
               <Text
                 style={{
                   color: active ? '#0F1520' : Colors.t3,
-                  fontSize: 9,
+                  fontSize: 11,
                   fontFamily: 'IBMPlexMono_600SemiBold',
                   letterSpacing: 0.72,
                   textTransform: 'uppercase',
@@ -165,7 +165,7 @@ export function VisitListScreen() {
         <FlatList
           data={filtered}
           keyExtractor={(item) => String(item.id)}
-          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24, flexGrow: 1 }}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24, flexGrow: 1 }}
           refreshing={isFetching && !isLoading}
           onRefresh={refetch}
           renderItem={({ item }) => (
