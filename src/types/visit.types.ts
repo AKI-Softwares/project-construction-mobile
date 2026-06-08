@@ -1,4 +1,3 @@
-// src/types/visit.types.ts
 export type VisitStatus = 'NOT_STARTED' | 'ONGOING' | 'FINALIZED';
 
 export interface Building {
@@ -17,4 +16,37 @@ export interface Visit {
   status: VisitStatus;
   createdAt: string;
   apartment: Apartment;
+}
+
+export interface NonConformity {
+  id: number;
+  description: string;
+}
+
+export interface VisitItem {
+  id: number;
+  serviceId: number;
+  serviceName: string;
+  status: 'OK' | 'NOK' | null;
+  nonConformity: NonConformity | null;
+}
+
+export interface Room {
+  id: number;
+  name: string;
+  isComplete: boolean;
+  items: VisitItem[];
+}
+
+export interface Inspector {
+  id: number;
+  name: string;
+}
+
+export interface VisitDetail extends Visit {
+  checklistId: number;
+  observations: string | null;
+  finalizedAt: string | null;
+  inspector: Inspector;
+  rooms: Room[];
 }
