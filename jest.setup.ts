@@ -1,5 +1,3 @@
-import '@testing-library/react-native/extend-expect';
-
 jest.mock('expo-secure-store', () => ({
   getItemAsync: jest.fn(() => Promise.resolve(null)),
   setItemAsync: jest.fn(() => Promise.resolve()),
