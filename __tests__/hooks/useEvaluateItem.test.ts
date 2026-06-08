@@ -1,5 +1,5 @@
 import React from 'react';
-import { renderHook, waitFor } from '@testing-library/react-native';
+import { renderHook, act, waitFor } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useEvaluateItem } from '../../src/hooks/useEvaluateItem';
 import { visitsService } from '../../src/services/visits.service';
@@ -30,7 +30,9 @@ describe('useEvaluateItem', () => {
   it('chama evaluateItem com itemId e status corretos', async () => {
     mockedService.evaluateItem.mockResolvedValueOnce(mockItem);
     const { result } = renderHook(() => useEvaluateItem(1), { wrapper: makeWrapper() });
-    result.current.mutate({ itemId: 10, status: 'OK' });
+    await act(async () => {
+      result.current.mutate({ itemId: 10, status: 'OK' });
+    });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(mockedService.evaluateItem).toHaveBeenCalledWith(10, 'OK');
   });
@@ -38,7 +40,9 @@ describe('useEvaluateItem', () => {
   it('expõe isError em falha da mutation', async () => {
     mockedService.evaluateItem.mockRejectedValueOnce(new Error('Conflict'));
     const { result } = renderHook(() => useEvaluateItem(1), { wrapper: makeWrapper() });
-    result.current.mutate({ itemId: 10, status: 'NOK' });
+    await act(async () => {
+      result.current.mutate({ itemId: 10, status: 'NOK' });
+    });
     await waitFor(() => expect(result.current.isError).toBe(true));
   });
 });
