@@ -68,7 +68,7 @@ export const EvaluationSheet = memo(function EvaluationSheet({ item, visitId, on
       index={-1}
       snapPoints={snapPoints}
       enablePanDownToClose
-      onClose={onClose}
+      onChange={(index) => { if (index === -1) onClose(); }}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: Colors.bg2 }}
       handleIndicatorStyle={{ backgroundColor: Colors.t3 }}
