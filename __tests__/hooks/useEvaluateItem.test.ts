@@ -34,7 +34,7 @@ describe('useEvaluateItem', () => {
       result.current.mutate({ itemId: 10, status: 'OK' });
     });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(mockedService.evaluateItem).toHaveBeenCalledWith(10, 'OK');
+    expect(mockedService.evaluateItem).toHaveBeenCalledWith(1, 10, 'OK');
   });
 
   it('expõe isError em falha da mutation', async () => {

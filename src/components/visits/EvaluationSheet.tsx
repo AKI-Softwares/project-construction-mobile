@@ -48,15 +48,16 @@ export const EvaluationSheet = memo(function EvaluationSheet({ item, visitId, on
   );
 
   const renderBackdrop = useCallback(
-    (props: BottomSheetBackdropProps) => (
-      <BottomSheetBackdrop
-        {...props}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-        onPress={onClose}
-      />
-    ),
-    [onClose],
+    (props: BottomSheetBackdropProps) =>
+      item ? (
+        <BottomSheetBackdrop
+          {...props}
+          disappearsOnIndex={-1}
+          appearsOnIndex={0}
+          onPress={onClose}
+        />
+      ) : null,
+    [item, onClose],
   );
 
   const apiError = error as AxiosError<{ message: string }> | null;
@@ -67,6 +68,7 @@ export const EvaluationSheet = memo(function EvaluationSheet({ item, visitId, on
       ref={sheetRef}
       index={-1}
       snapPoints={snapPoints}
+      enableDynamicSizing={false}
       enablePanDownToClose
       onChange={(index) => { if (index === -1) onClose(); }}
       backdropComponent={renderBackdrop}

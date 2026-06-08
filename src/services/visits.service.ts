@@ -15,6 +15,6 @@ export const visitsService = {
   startVisit: (id: number): Promise<Visit> =>
     api.patch<Visit>(`/visits/${id}/start`).then((r) => r.data),
 
-  evaluateItem: (itemId: number, status: 'OK' | 'NOK'): Promise<VisitItem> =>
-    api.patch<VisitItem>(`/visit-items/${itemId}`, { status }).then((r) => r.data),
+  evaluateItem: (visitId: number, itemId: number, status: 'OK' | 'NOK'): Promise<VisitItem> =>
+    api.patch<VisitItem>(`/visits/${visitId}/items/${itemId}`, { status }).then((r) => r.data),
 };

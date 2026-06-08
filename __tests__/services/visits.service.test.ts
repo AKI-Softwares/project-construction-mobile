@@ -99,19 +99,19 @@ describe('visitsService', () => {
         status: 'OK' as const,
         nonConformity: null,
       };
-      mock.onPatch('/visit-items/10').reply(200, updated);
-      const result = await visitsService.evaluateItem(10, 'OK');
+      mock.onPatch('/visits/1/items/10').reply(200, updated);
+      const result = await visitsService.evaluateItem(1, 10, 'OK');
       expect(result.status).toBe('OK');
     });
 
     it('rejeita em 409 (guard de cômodo)', async () => {
-      mock.onPatch('/visit-items/10').reply(409);
-      await expect(visitsService.evaluateItem(10, 'NOK')).rejects.toThrow();
+      mock.onPatch('/visits/1/items/10').reply(409);
+      await expect(visitsService.evaluateItem(1, 10, 'NOK')).rejects.toThrow();
     });
 
     it('rejeita em erro de rede', async () => {
-      mock.onPatch('/visit-items/10').networkError();
-      await expect(visitsService.evaluateItem(10, 'OK')).rejects.toThrow();
+      mock.onPatch('/visits/1/items/10').networkError();
+      await expect(visitsService.evaluateItem(1, 10, 'OK')).rejects.toThrow();
     });
   });
 });

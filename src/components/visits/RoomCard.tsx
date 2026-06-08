@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Pressable, View, Text } from 'react-native';
+import { Pressable, View, Text, StyleSheet } from 'react-native';
 import { Colors } from '@/theme/colors';
 import type { Room } from '@/types/visit.types';
 
@@ -14,70 +14,76 @@ export const RoomCard = memo(function RoomCard({ room, onPress }: Props) {
     : Colors.pend;
 
   const serviceCount = room.items.length;
+  const statusColor = room.isComplete ? Colors.ok : Colors.t2;
+  const statusLabel = room.isComplete ? 'CONCLUÍDO' : 'PENDENTE';
 
-  const containerStyle = {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    backgroundColor: Colors.bg2,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderLeftWidth: 3,
-    borderLeftColor: borderColor,
-    borderTopLeftRadius: 0,
-    borderBottomLeftRadius: 0,
-    borderTopRightRadius: 6,
-    borderBottomRightRadius: 6,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    marginBottom: 10,
-  };
-
-  const label = (
-    <View style={{ flex: 1 }}>
-      <Text
-        style={{
-          color: Colors.t1,
-          fontSize: 14,
-          fontFamily: 'IBMPlexSans_600SemiBold',
-          marginBottom: 2,
-        }}
-      >
-        {room.name}
-      </Text>
-      <Text
-        style={{
-          color: Colors.t2,
-          fontSize: 12,
-          fontFamily: 'IBMPlexSans_400Regular',
-        }}
-      >
-        {serviceCount} {serviceCount === 1 ? 'serviço' : 'serviços'}
-      </Text>
-    </View>
-  );
+  const rowStyle = [
+    styles.row,
+    { borderLeftColor: borderColor },
+  ];
 
   if (!onPress) {
-    return <View style={containerStyle}>{label}</View>;
+    return (
+      <View style={rowStyle}>
+        <Text style={styles.name} numberOfLines={1}>{room.name}</Text>
+        <Text style={styles.count}>
+          {serviceCount} {serviceCount === 1 ? 'serviço' : 'serviços'}
+        </Text>
+        <Text style={[styles.status, { color: statusColor }]}>{statusLabel}</Text>
+      </View>
+    );
   }
 
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => ({
-        ...containerStyle,
-        backgroundColor: pressed ? Colors.bg3 : Colors.bg2,
-      })}
+      style={({ pressed }) => [
+        rowStyle,
+        pressed && styles.pressed,
+      ]}
     >
-      {label}
-      <Text
-        style={{
-          color: room.isComplete ? Colors.ok : Colors.t3,
-          fontSize: 16,
-          fontFamily: 'IBMPlexMono_400Regular',
-        }}
-      >
-        {room.isComplete ? '✓' : '○'}
+      <Text style={styles.name} numberOfLines={1}>{room.name}</Text>
+      <Text style={styles.count}>
+        {serviceCount} {serviceCount === 1 ? 'serviço' : 'serviços'}
       </Text>
+      <Text style={[styles.status, { color: statusColor }]}>{statusLabel}</Text>
     </Pressable>
   );
+});
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.bg2,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderLeftWidth: 3,
+    borderLeftColor: Colors.pend,
+    borderTopRightRadius: 6,
+    borderBottomRightRadius: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    marginBottom: 10,
+  },
+  pressed: {
+    backgroundColor: Colors.bg3,
+  },
+  name: {
+    flex: 1,
+    color: Colors.t1,
+    fontSize: 14,
+    fontFamily: 'IBMPlexSans_600SemiBold',
+  },
+  count: {
+    color: Colors.t2,
+    fontSize: 12,
+    fontFamily: 'IBMPlexMono_400Regular',
+    marginLeft: 12,
+  },
+  status: {
+    fontSize: 12,
+    fontFamily: 'IBMPlexMono_400Regular',
+    marginLeft: 12,
+  },
 });

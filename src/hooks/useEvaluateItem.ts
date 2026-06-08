@@ -7,7 +7,7 @@ export function useEvaluateItem(visitId: number) {
 
   return useMutation({
     mutationFn: ({ itemId, status }: { itemId: number; status: 'OK' | 'NOK' }) =>
-      visitsService.evaluateItem(itemId, status),
+      visitsService.evaluateItem(visitId, itemId, status),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.VISIT_DETAIL(visitId) });
     },

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { ScrollView, View, Text, Pressable } from 'react-native';
+import { ScrollView, View, Text, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Colors } from '@/theme/colors';
@@ -102,84 +102,91 @@ export function RoomScreen({ visitId, roomId }: Props) {
   const total = room.items.length;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.bg1 }} edges={['top']}>
-      <Pressable
-        onPress={() => router.back()}
-        style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: 4 }}
-        hitSlop={8}
-      >
-        <Text
-          style={{
-            color: Colors.amber,
-            fontSize: 13,
-            fontFamily: 'IBMPlexMono_600SemiBold',
-            letterSpacing: 0.6,
-          }}
+    <View style={styles.root}>
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <Pressable
+          onPress={() => router.back()}
+          style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: 4 }}
+          hitSlop={8}
         >
-          ← VOLTAR
-        </Text>
-      </Pressable>
-
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: 16 }}>
           <Text
             style={{
-              color: Colors.t1,
-              fontSize: 18,
-              fontFamily: 'IBMPlexSans_600SemiBold',
-              marginBottom: 4,
-            }}
-          >
-            {room.name}
-          </Text>
-          <Text
-            style={{
-              color: Colors.t2,
+              color: Colors.amber,
               fontSize: 13,
-              fontFamily: 'IBMPlexSans_400Regular',
+              fontFamily: 'IBMPlexMono_600SemiBold',
+              letterSpacing: 0.6,
             }}
           >
-            {evaluated} de {total} itens avaliados
+            ← VOLTAR
           </Text>
-        </View>
+        </Pressable>
 
-        <Text
-          style={{
-            color: Colors.t3,
-            fontSize: 9,
-            fontFamily: 'IBMPlexMono_600SemiBold',
-            letterSpacing: 1.08,
-            textTransform: 'uppercase',
-            paddingHorizontal: 20,
-            marginBottom: 8,
-          }}
-        >
-          ITENS
-        </Text>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: 16 }}>
+            <Text
+              style={{
+                color: Colors.t1,
+                fontSize: 18,
+                fontFamily: 'IBMPlexSans_600SemiBold',
+                marginBottom: 4,
+              }}
+            >
+              {room.name}
+            </Text>
+            <Text
+              style={{
+                color: Colors.t2,
+                fontSize: 13,
+                fontFamily: 'IBMPlexSans_400Regular',
+              }}
+            >
+              {evaluated} de {total} itens avaliados
+            </Text>
+          </View>
 
-        <View
-          style={{
-            backgroundColor: Colors.bg2,
-            borderRadius: 6,
-            marginHorizontal: 20,
-            overflow: 'hidden',
-          }}
-        >
-          {room.items.map((item) => (
-            <ItemRow
-              key={item.id}
-              item={item}
-              onPress={() => handleItemPress(item)}
-            />
-          ))}
-        </View>
-      </ScrollView>
+          <Text
+            style={{
+              color: Colors.t3,
+              fontSize: 9,
+              fontFamily: 'IBMPlexMono_600SemiBold',
+              letterSpacing: 1.08,
+              textTransform: 'uppercase',
+              paddingHorizontal: 20,
+              marginBottom: 8,
+            }}
+          >
+            ITENS
+          </Text>
+
+          <View
+            style={{
+              backgroundColor: Colors.bg2,
+              borderRadius: 6,
+              marginHorizontal: 20,
+              overflow: 'hidden',
+            }}
+          >
+            {room.items.map((item) => (
+              <ItemRow
+                key={item.id}
+                item={item}
+                onPress={() => handleItemPress(item)}
+              />
+            ))}
+          </View>
+        </ScrollView>
+      </SafeAreaView>
 
       <EvaluationSheet
         item={selectedItem}
         visitId={visitId}
         onClose={handleSheetClose}
       />
-    </SafeAreaView>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: Colors.bg1 },
+  safeArea: { flex: 1 },
+});

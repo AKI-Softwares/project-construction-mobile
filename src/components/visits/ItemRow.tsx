@@ -17,12 +17,12 @@ export const ItemRow = memo(function ItemRow({ item, onPress }: Props) {
   const badgeColor =
     item.status === 'OK' ? Colors.ok :
     item.status === 'NOK' ? Colors.nc :
-    Colors.t3;
+    Colors.t2;
 
   const badgeLabel =
     item.status === 'OK' ? '✓ OK' :
     item.status === 'NOK' ? '✕ NOK' :
-    '○';
+    'PENDENTE';
 
   return (
     <Pressable
@@ -31,7 +31,7 @@ export const ItemRow = memo(function ItemRow({ item, onPress }: Props) {
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 20,
-        paddingVertical: 14,
+        paddingVertical: 16,
         backgroundColor: pressed ? Colors.bg3 : Colors.bg2,
         borderBottomWidth: 1,
         borderBottomColor: Colors.border,
@@ -46,34 +46,23 @@ export const ItemRow = memo(function ItemRow({ item, onPress }: Props) {
           marginRight: 12,
         }}
       />
-      <View style={{ flex: 1 }}>
-        <Text
-          style={{
-            color: Colors.t1,
-            fontSize: 14,
-            fontFamily: 'IBMPlexSans_400Regular',
-          }}
-        >
-          {item.serviceName}
-        </Text>
-        {item.status === null && (
-          <Text
-            style={{
-              color: Colors.t3,
-              fontSize: 12,
-              fontFamily: 'IBMPlexSans_400Regular',
-              marginTop: 2,
-            }}
-          >
-            Não avaliado
-          </Text>
-        )}
-      </View>
+      <Text
+        style={{
+          flex: 1,
+          color: Colors.t1,
+          fontSize: 15,
+          fontFamily: 'IBMPlexSans_400Regular',
+        }}
+        numberOfLines={2}
+      >
+        {item.serviceName}
+      </Text>
       <Text
         style={{
           color: badgeColor,
-          fontSize: 12,
+          fontSize: 13,
           fontFamily: 'IBMPlexMono_400Regular',
+          marginLeft: 12,
         }}
       >
         {badgeLabel}
