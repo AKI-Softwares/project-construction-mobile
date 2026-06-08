@@ -1,6 +1,7 @@
 import MockAdapter from 'axios-mock-adapter';
 import { api } from '../../src/services/api';
 import { visitsService } from '../../src/services/visits.service';
+import type { VisitDetail } from '../../src/types/visit.types';
 
 const mock = new MockAdapter(api);
 
@@ -14,6 +15,25 @@ const mockVisit = {
     block: 'A',
     building: { name: 'Residencial Aurora' },
   },
+};
+
+const mockVisitDetail: VisitDetail = {
+  ...mockVisit,
+  checklistId: 3,
+  observations: null,
+  finalizedAt: null,
+  inspector: { id: 2, name: 'João' },
+  rooms: [
+    {
+      id: 5,
+      name: 'Sala',
+      isComplete: false,
+      items: [
+        { id: 10, serviceId: 3, serviceName: 'Pintura', status: 'NOK', nonConformity: { id: 1, description: 'Risco na parede' } },
+        { id: 11, serviceId: 4, serviceName: 'Rejunte', status: null, nonConformity: null },
+      ],
+    },
+  ],
 };
 
 describe('visitsService', () => {
@@ -35,6 +55,38 @@ describe('visitsService', () => {
     it('rejeita promise em erro de rede', async () => {
       mock.onGet('/visits/mine').networkError();
       await expect(visitsService.getMyVisits('NOT_STARTED,ONGOING')).rejects.toThrow();
+    });
+  });
+
+  describe('getVisitById', () => {
+    it('retorna VisitDetail por id', async () => {
+      mock.onGet('/visits/1').reply(200, mockVisitDetail);
+      const result = await visitsService.getVisitById(1);
+      expect(result).toEqual(mockVisitDetail);
+    });
+
+    it('rejeita em 404', async () => {
+      mock.onGet('/visits/99').reply(404);
+      await expect(visitsService.getVisitById(99)).rejects.toThrow();
+    });
+
+    it('rejeita em erro de rede', async () => {
+      mock.onGet('/visits/1').networkError();
+      await expect(visitsService.getVisitById(1)).rejects.toThrow();
+    });
+  });
+
+  describe('startVisit', () => {
+    it('retorna visit com status ONGOING', async () => {
+      const started = { ...mockVisit, status: 'ONGOING' as const };
+      mock.onPatch('/visits/1/start').reply(200, started);
+      const result = await visitsService.startVisit(1);
+      expect(result.status).toBe('ONGOING');
+    });
+
+    it('rejeita em 409 (visita já iniciada)', async () => {
+      mock.onPatch('/visits/1/start').reply(409);
+      await expect(visitsService.startVisit(1)).rejects.toThrow();
     });
   });
 });
