@@ -89,4 +89,29 @@ describe('visitsService', () => {
       await expect(visitsService.startVisit(1)).rejects.toThrow();
     });
   });
+
+  describe('evaluateItem', () => {
+    it('retorna VisitItem com status atualizado', async () => {
+      const updated = {
+        id: 10,
+        serviceId: 3,
+        serviceName: 'Pintura',
+        status: 'OK' as const,
+        nonConformity: null,
+      };
+      mock.onPatch('/visit-items/10').reply(200, updated);
+      const result = await visitsService.evaluateItem(10, 'OK');
+      expect(result.status).toBe('OK');
+    });
+
+    it('rejeita em 409 (guard de cômodo)', async () => {
+      mock.onPatch('/visit-items/10').reply(409);
+      await expect(visitsService.evaluateItem(10, 'NOK')).rejects.toThrow();
+    });
+
+    it('rejeita em erro de rede', async () => {
+      mock.onPatch('/visit-items/10').networkError();
+      await expect(visitsService.evaluateItem(10, 'OK')).rejects.toThrow();
+    });
+  });
 });

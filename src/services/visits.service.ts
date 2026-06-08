@@ -1,5 +1,5 @@
 import { api } from './api';
-import type { Visit, VisitDetail } from '@/types/visit.types';
+import type { Visit, VisitDetail, VisitItem } from '@/types/visit.types';
 
 type StatusFilter = string & { readonly __brand: 'StatusFilter' };
 export const ACTIVE_VISITS_FILTER = 'NOT_STARTED,ONGOING' as StatusFilter;
@@ -14,4 +14,7 @@ export const visitsService = {
 
   startVisit: (id: number): Promise<Visit> =>
     api.patch<Visit>(`/visits/${id}/start`).then((r) => r.data),
+
+  evaluateItem: (itemId: number, status: 'OK' | 'NOK'): Promise<VisitItem> =>
+    api.patch<VisitItem>(`/visit-items/${itemId}`, { status }).then((r) => r.data),
 };
