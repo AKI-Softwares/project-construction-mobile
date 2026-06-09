@@ -12,7 +12,7 @@ export async function compressImage(uri: string): Promise<LocalPhoto> {
   });
 
   const getSize = async (fileUri: string): Promise<number> => {
-    const info = await FileSystem.getInfoAsync(fileUri, { size: true });
+    const info = await FileSystem.getInfoAsync(fileUri);
     return (info as FileSystem.FileInfo & { size?: number }).size ?? 0;
   };
 
