@@ -105,7 +105,11 @@ export function RoomScreen({ visitId, roomId }: Props) {
               <ItemRow
                 key={item.id}
                 item={item}
-                onPress={() => handleItemPress(item)}
+                onPress={
+                  !isFinalized || item.status === 'NOK'
+                    ? () => handleItemPress(item)
+                    : undefined
+                }
               />
             ))}
           </View>
