@@ -40,5 +40,8 @@ export async function compressImage(uri: string): Promise<LocalPhoto> {
     [{ resize: { width: half } }],
     { compress: 0.5, format: ImageManipulator.SaveFormat.JPEG },
   );
+  if ((await getSize(result.uri)) > MAX_BYTES) {
+    throw new Error('IMAGE_TOO_LARGE');
+  }
   return makeResult(result.uri);
 }

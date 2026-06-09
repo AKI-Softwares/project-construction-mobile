@@ -56,6 +56,8 @@ export function PhotoGrid({
           const compressed = await compressImage(pickerResult.assets[0].uri);
           onAdd(compressed);
         }
+      } catch {
+        Alert.alert('Erro', 'Não foi possível processar a imagem.');
       } finally {
         setIsLoading(false);
       }
@@ -104,7 +106,7 @@ export function PhotoGrid({
       ))}
 
       {local.map((photo, index) => (
-        <View key={`l-${index}`} style={{ width: THUMB, height: THUMB }}>
+        <View key={`l-${photo.uri}`} style={{ width: THUMB, height: THUMB }}>
           <Image
             source={{ uri: photo.uri }}
             style={{ width: THUMB, height: THUMB, borderRadius: 4 }}

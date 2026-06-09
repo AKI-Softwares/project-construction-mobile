@@ -12,7 +12,7 @@ export function useFinalizeVisit(visitId: number) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.VISIT_DETAIL(visitId) });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.VISITS_MINE });
-      router.replace('/(app)/(tabs)/visits');
+      router.replace('/(app)/(tabs)/visits' as any);
     },
   });
 }

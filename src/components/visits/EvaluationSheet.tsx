@@ -94,7 +94,7 @@ export const EvaluationSheet = memo(function EvaluationSheet({
       ncDraft.localPhotos.length === 0 &&
       !isFinalized
     ) {
-      evalMutate({ itemId: item!.id, status: null });
+      if (item) evalMutate({ itemId: item.id, status: null });
     }
     onClose();
   }, [sheetState, item, ncDraft, isFinalized, evalMutate, onClose]);
