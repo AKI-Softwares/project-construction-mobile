@@ -5,7 +5,7 @@ import type { VisitItem } from '@/types/visit.types';
 
 interface Props {
   item: VisitItem;
-  onPress: () => void;
+  onPress?: () => void;
 }
 
 export const ItemRow = memo(function ItemRow({ item, onPress }: Props) {
@@ -27,14 +27,16 @@ export const ItemRow = memo(function ItemRow({ item, onPress }: Props) {
   return (
     <Pressable
       onPress={onPress}
+      disabled={!onPress}
       style={({ pressed }) => ({
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 20,
         paddingVertical: 16,
-        backgroundColor: pressed ? Colors.bg3 : Colors.bg2,
+        backgroundColor: pressed && onPress ? Colors.bg3 : Colors.bg2,
         borderBottomWidth: 1,
         borderBottomColor: Colors.border,
+        opacity: onPress ? 1 : 0.45,
       })}
     >
       <View
