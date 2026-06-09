@@ -18,9 +18,15 @@ export interface Visit {
   apartment: Apartment;
 }
 
+export interface Photo {
+  id: number;
+  url: string;
+}
+
 export interface NonConformity {
   id: number;
   description: string;
+  photos: Photo[];
 }
 
 export interface VisitItem {
