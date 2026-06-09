@@ -113,5 +113,32 @@ describe('visitsService', () => {
       mock.onPatch('/visits/1/items/10').networkError();
       await expect(visitsService.evaluateItem(1, 10, 'OK')).rejects.toThrow();
     });
+
+    it('envia status null para reverter item', async () => {
+      const reverted = {
+        id: 10,
+        serviceId: 3,
+        serviceName: 'Pintura',
+        status: null,
+        nonConformity: null,
+      };
+      mock.onPatch('/visits/1/items/10').reply(200, reverted);
+      const result = await visitsService.evaluateItem(1, 10, null);
+      expect(result.status).toBeNull();
+    });
+  });
+
+  describe('finalizeVisit', () => {
+    it('retorna visit com status FINALIZED', async () => {
+      const finalized = { ...mockVisit, status: 'FINALIZED' as const };
+      mock.onPatch('/visits/1').reply(200, finalized);
+      const result = await visitsService.finalizeVisit(1);
+      expect(result.status).toBe('FINALIZED');
+    });
+
+    it('rejeita em 409 (itens pendentes)', async () => {
+      mock.onPatch('/visits/1').reply(409);
+      await expect(visitsService.finalizeVisit(1)).rejects.toThrow();
+    });
   });
 });

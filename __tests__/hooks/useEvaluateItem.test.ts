@@ -45,4 +45,15 @@ describe('useEvaluateItem', () => {
     });
     await waitFor(() => expect(result.current.isError).toBe(true));
   });
+
+  it('chama evaluateItem com status null para reverter', async () => {
+    const reverted = { id: 10, serviceId: 3, serviceName: 'Pintura', status: null, nonConformity: null };
+    mockedService.evaluateItem.mockResolvedValueOnce(reverted);
+    const { result } = renderHook(() => useEvaluateItem(1), { wrapper: makeWrapper() });
+    await act(async () => {
+      result.current.mutate({ itemId: 10, status: null });
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(mockedService.evaluateItem).toHaveBeenCalledWith(1, 10, null);
+  });
 });
