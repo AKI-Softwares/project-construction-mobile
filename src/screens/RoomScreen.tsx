@@ -19,7 +19,10 @@ export function RoomScreen({ visitId, roomId }: Props) {
   const { data: visit, isLoading, isError, refetch } = useVisitDetail(visitId);
   const [selectedItem, setSelectedItem] = useState<VisitItem | null>(null);
 
-  const handleItemPress = useCallback((item: VisitItem) => setSelectedItem(item), []);
+  const handleItemPress = useCallback((item: VisitItem) => {
+    refetch();
+    setSelectedItem(item);
+  }, [refetch]);
   const handleSheetClose = useCallback(() => setSelectedItem(null), []);
 
   if (isLoading) return <Spinner fullScreen />;
