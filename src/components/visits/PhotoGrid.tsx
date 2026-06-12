@@ -56,8 +56,9 @@ export function PhotoGrid({
           const compressed = await compressImage(pickerResult.assets[0].uri);
           onAdd(compressed);
         }
-      } catch {
-        Alert.alert('Erro', 'Não foi possível processar a imagem.');
+      } catch (err) {
+        const detail = __DEV__ && err instanceof Error ? `\n${err.message}` : '';
+        Alert.alert('Erro', `Não foi possível processar a imagem.${detail}`);
       } finally {
         setIsLoading(false);
       }
