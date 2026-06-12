@@ -17,6 +17,6 @@ export const photosService = {
       .then((r) => r.data);
   },
 
-  remove: (id: number): Promise<void> =>
-    api.delete(`/photos/${id}`).then(() => undefined),
+  remove: (nonConformityId: number, photoId: number): Promise<void> =>
+    api.delete(`/non-conformities/${nonConformityId}/photos/${photoId}`).then(() => undefined),
 };

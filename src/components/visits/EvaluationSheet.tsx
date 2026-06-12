@@ -168,7 +168,7 @@ export const EvaluationSheet = memo(function EvaluationSheet({
           await nonConformitiesService.patch(ncId, ncDraft.description.trim());
         }
         for (const photoId of ncDraft.removedPhotoIds) {
-          await photosService.remove(photoId);
+          await photosService.remove(ncId, photoId);
         }
         for (const photo of ncDraft.localPhotos) {
           await photosService.add(ncId, photo);

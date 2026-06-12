@@ -15,7 +15,8 @@ export function usePhoto(visitId: number) {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (photoId: number) => photosService.remove(photoId),
+    mutationFn: ({ ncId, photoId }: { ncId: number; photoId: number }) =>
+      photosService.remove(ncId, photoId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.VISIT_DETAIL(visitId) });
     },
