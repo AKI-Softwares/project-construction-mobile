@@ -7,5 +7,7 @@ export function useVisitDetail(id: number) {
     queryKey: QUERY_KEYS.VISIT_DETAIL(id),
     queryFn: () => visitsService.getVisitById(id),
     staleTime: 0,
+    refetchInterval: (query) =>
+      query.state.data?.status === 'ONGOING' ? 30_000 : false,
   });
 }
