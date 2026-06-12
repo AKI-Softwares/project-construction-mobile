@@ -196,7 +196,17 @@ export const EvaluationSheet = memo(function EvaluationSheet({
   );
 
   const apiError = evalError as AxiosError<{ message: string }> | null;
-  const evalErrorMessage = apiError?.response?.data?.message ?? null;
+  const evalErrorMessage = (() => {
+    if (!apiError) return null;
+    if (apiError.response?.status === 409) {
+      const msg = apiError.response.data?.message ?? '';
+      if (msg.includes('Finish current room'))
+        return 'Finalize o cômodo atual antes de mudar para outro.';
+      if (msg.includes('Record non-conformity'))
+        return 'Registre a NC do item NOK antes de continuar.';
+    }
+    return apiError.response?.data?.message ?? null;
+  })();
 
   return (
     <BottomSheet
