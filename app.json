@@ -6,7 +6,6 @@
     "orientation": "portrait",
     "scheme": "checkobra",
     "userInterfaceStyle": "dark",
-    "icon": "./assets/icon.png",
     "splash": {
       "backgroundColor": "#0F1520"
     },
@@ -15,9 +14,6 @@
       "bundleIdentifier": "br.com.checkobra.mobile"
     },
     "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#0F1520"
-      },
       "package": "br.com.checkobra.mobile"
     },
     "web": {

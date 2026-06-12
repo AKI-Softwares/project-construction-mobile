@@ -11,28 +11,45 @@ const mockUser: User = {
 
 describe('authStore', () => {
   beforeEach(() => {
-    useAuthStore.setState({ token: null, user: null, _hasHydrated: false });
+    useAuthStore.setState({ token: null, user: null, mustChangePassword: false, _hasHydrated: false });
   });
 
   it('estado inicial é nulo', () => {
-    const { token, user } = useAuthStore.getState();
+    const { token, user, mustChangePassword } = useAuthStore.getState();
     expect(token).toBeNull();
     expect(user).toBeNull();
+    expect(mustChangePassword).toBe(false);
   });
 
-  it('login define token e user', async () => {
+  it('login define token, user e mustChangePassword', async () => {
+    await act(async () => useAuthStore.getState().login('tok123', mockUser, true));
+    const state = useAuthStore.getState();
+    expect(state.token).toBe('tok123');
+    expect(state.user).toEqual(mockUser);
+    expect(state.mustChangePassword).toBe(true);
+  });
+
+  it('login com mustChangePassword omitido usa false', async () => {
     await act(async () => useAuthStore.getState().login('tok123', mockUser));
-    expect(useAuthStore.getState().token).toBe('tok123');
-    expect(useAuthStore.getState().user).toEqual(mockUser);
+    expect(useAuthStore.getState().mustChangePassword).toBe(false);
   });
 
-  it('logout limpa token e user', async () => {
+  it('clearMustChangePassword reseta para false', async () => {
     await act(async () => {
-      useAuthStore.getState().login('tok123', mockUser);
+      useAuthStore.getState().login('tok123', mockUser, true);
+      useAuthStore.getState().clearMustChangePassword();
+    });
+    expect(useAuthStore.getState().mustChangePassword).toBe(false);
+  });
+
+  it('logout limpa token, user e mustChangePassword', async () => {
+    await act(async () => {
+      useAuthStore.getState().login('tok123', mockUser, true);
       useAuthStore.getState().logout();
     });
     expect(useAuthStore.getState().token).toBeNull();
     expect(useAuthStore.getState().user).toBeNull();
+    expect(useAuthStore.getState().mustChangePassword).toBe(false);
   });
 
   it('setHydrated marca _hasHydrated como true', async () => {

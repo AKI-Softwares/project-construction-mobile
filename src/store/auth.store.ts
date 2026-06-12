@@ -12,9 +12,11 @@ const secureStorage = {
 interface AuthState {
   token: string | null;
   user: User | null;
+  mustChangePassword: boolean;
   _hasHydrated: boolean;
-  login: (token: string, user: User) => void;
+  login: (token: string, user: User, mustChangePassword?: boolean) => void;
   logout: () => void;
+  clearMustChangePassword: () => void;
   setHydrated: () => void;
 }
 
@@ -23,15 +25,18 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       token: null,
       user: null,
+      mustChangePassword: false,
       _hasHydrated: false,
-      login: (token, user) => set({ token, user }),
-      logout: () => set({ token: null, user: null }),
+      login: (token, user, mustChangePassword = false) =>
+        set({ token, user, mustChangePassword }),
+      logout: () => set({ token: null, user: null, mustChangePassword: false }),
+      clearMustChangePassword: () => set({ mustChangePassword: false }),
       setHydrated: () => set({ _hasHydrated: true }),
     }),
     {
       name: 'auth-storage',
       storage: createJSONStorage(() => secureStorage),
-      partialize: (state) => ({ token: state.token, user: state.user }),
+      partialize: (state) => ({ token: state.token, user: state.user, mustChangePassword: state.mustChangePassword }),
       onRehydrateStorage: () => (state) => {
         state?.setHydrated();
       },

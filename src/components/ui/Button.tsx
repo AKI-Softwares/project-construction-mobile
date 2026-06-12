@@ -26,6 +26,11 @@ const variantStyles: Record<Variant, { container: string; text: string }> = {
   },
 };
 
+const disabledStyles = {
+  container: 'bg-bg4 border border-bg4',
+  text: 'text-t3',
+};
+
 export function Button({
   label,
   onPress,
@@ -35,7 +40,7 @@ export function Button({
   fullWidth = false,
 }: ButtonProps) {
   const isDisabled = disabled || loading;
-  const styles = variantStyles[variant];
+  const styles = disabled && !loading ? disabledStyles : variantStyles[variant];
 
   return (
     <Pressable
@@ -45,7 +50,6 @@ export function Button({
         'flex-row items-center justify-center rounded-md px-4 py-[14px]',
         styles.container,
         fullWidth ? 'w-full' : '',
-        isDisabled ? 'opacity-50' : '',
       ].join(' ')}
     >
       {loading ? (

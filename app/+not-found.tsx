@@ -7,7 +7,7 @@ export default function NotFoundScreen() {
       <Stack.Screen options={{ title: 'Não encontrado' }} />
       <View className="flex-1 items-center justify-center bg-bg1">
         <Text className="text-base text-t1">Tela não encontrada.</Text>
-        <Link href="/(auth)/login" className="mt-4 text-amber">
+        <Link href="/(app)/(tabs)/visits" className="mt-4 text-amber">
           Voltar ao início
         </Link>
       </View>
