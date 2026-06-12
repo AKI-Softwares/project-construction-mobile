@@ -1,10 +1,11 @@
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios';
 import { router } from 'expo-router';
 import { z } from 'zod';
+import { decodeJwtPayload } from '@/lib/jwt';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { authService } from '@/services/auth.service';
@@ -33,12 +34,19 @@ export function LoginScreen() {
     try {
       const { token } = await authService.login(data);
       const user = await authService.getMe(token);
-      login(token, user);
-      router.replace('/(app)/(tabs)/visits');
+      const { mustChangePassword } = decodeJwtPayload(token);
+      login(token, user, mustChangePassword);
+      if (mustChangePassword) {
+        router.replace('/(auth)/change-password');
+      } else {
+        router.replace('/(app)/(tabs)/visits');
+      }
     } catch (error: unknown) {
       const status = (error as AxiosError)?.response?.status;
       if (status === 401) {
         Alert.alert('Erro', 'Credenciais inválidas. Verifique e-mail e senha.');
+      } else if (status === 403) {
+        Alert.alert('Acesso bloqueado', 'Empresa inativa ou pendente de aprovação.');
       } else {
         Alert.alert('Erro de conexão', 'Não foi possível conectar ao servidor. Tente novamente.');
       }
@@ -148,11 +156,14 @@ export function LoginScreen() {
                 />
               </View>
 
-              <View className="mt-4 items-center">
+              <Pressable
+                className="mt-4 items-center"
+                onPress={() => router.push('/(auth)/forgot-password')}
+              >
                 <Text className="border-b border-border pb-0.5 text-xs text-t2">
                   Esqueci minha senha
                 </Text>
-              </View>
+              </Pressable>
             </View>
           </View>
 
