@@ -3,7 +3,7 @@ import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'r
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { z } from 'zod';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -19,6 +19,8 @@ type FormData = z.infer<typeof schema>;
 
 export function ChangePasswordScreen() {
   const clearMustChangePassword = useAuthStore((s) => s.clearMustChangePassword);
+  const { from } = useLocalSearchParams<{ from?: string }>();
+  const isVoluntary = from === 'profile';
 
   const {
     control,
@@ -33,7 +35,11 @@ export function ChangePasswordScreen() {
     try {
       await authService.changePassword(data.currentPassword, data.newPassword);
       clearMustChangePassword();
-      router.replace('/(app)/(tabs)/visits');
+      if (isVoluntary) {
+        router.back();
+      } else {
+        router.replace('/(app)/(tabs)/visits');
+      }
     } catch (error: unknown) {
       const status = (error as AxiosError)?.response?.status;
       if (status === 401) {
@@ -65,7 +71,7 @@ export function ChangePasswordScreen() {
                   marginBottom: 8,
                 }}
               >
-                Troca de Senha
+                Alterar Senha
               </Text>
               <Text
                 style={{
@@ -75,7 +81,9 @@ export function ChangePasswordScreen() {
                   lineHeight: 18,
                 }}
               >
-                Para sua segurança, defina uma nova senha antes de continuar.
+                {isVoluntary
+                  ? 'Digite sua senha atual e escolha uma nova senha.'
+                  : 'Para sua segurança, defina uma nova senha antes de continuar.'}
               </Text>
             </View>
 

@@ -41,6 +41,13 @@ export function ProfileScreen() {
 
         <Text style={styles.sectionLabel}>SESSÃO</Text>
 
+        <Pressable
+          onPress={() => router.push('/(app)/change-password?from=profile' as any)}
+          style={styles.actionButton}
+        >
+          <Text style={styles.actionText}>ALTERAR SENHA</Text>
+        </Pressable>
+
         <Pressable onPress={handleLogout} style={styles.logoutButton}>
           <Text style={styles.logoutText}>SAIR</Text>
         </Pressable>
@@ -111,6 +118,22 @@ const styles = StyleSheet.create({
     letterSpacing: 1.08,
     textTransform: 'uppercase',
     marginBottom: 12,
+  },
+  actionButton: {
+    alignSelf: 'stretch',
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: 6,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  actionText: {
+    color: Colors.t2,
+    fontSize: 11,
+    fontFamily: 'IBMPlexSans_700Bold',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
   },
   logoutButton: {
     alignSelf: 'stretch',
