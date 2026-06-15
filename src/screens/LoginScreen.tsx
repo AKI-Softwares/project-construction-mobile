@@ -47,6 +47,8 @@ export function LoginScreen() {
         Alert.alert('Erro', 'Credenciais inválidas. Verifique e-mail e senha.');
       } else if (status === 403) {
         Alert.alert('Acesso bloqueado', 'Empresa inativa ou pendente de aprovação.');
+      } else if (status === 429) {
+        Alert.alert('Muitas tentativas', 'Aguarde um momento e tente novamente.');
       } else {
         Alert.alert('Erro de conexão', 'Não foi possível conectar ao servidor. Tente novamente.');
       }
