@@ -28,6 +28,19 @@ export const visitsService = {
     api.patch<Visit>(`/visits/${id}/claim`).then((r) => r.data),
 };
 
+export const reportService = {
+  saveSignature: (id: number, imageBase64: string): Promise<{ id: number; signatureUrl: string | null }> =>
+    api.post(`/visits/${id}/signature`, { imageBase64 }).then((r) => r.data),
+
+  downloadReport: async (id: number): Promise<string> => {
+    const res = await api.get<ArrayBuffer>(`/visits/${id}/report`, { responseType: 'arraybuffer' });
+    const data = new Uint8Array(res.data);
+    let binary = '';
+    for (let i = 0; i < data.length; i++) binary += String.fromCharCode(data[i]);
+    return btoa(binary);
+  },
+};
+
 export const pushService = {
   saveToken: (token: string): Promise<void> =>
     api.post('/users/me/push-token', { token, platform: 'android' }).then(() => undefined),

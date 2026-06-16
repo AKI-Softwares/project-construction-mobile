@@ -60,6 +60,7 @@ export interface VisitDetail extends Visit {
   checklistId: number;
   observations: string | null;
   finalizedAt: string | null;
+  signatureUrl: string | null;
   inspector: Inspector | null;
   rooms: Room[];
 }
