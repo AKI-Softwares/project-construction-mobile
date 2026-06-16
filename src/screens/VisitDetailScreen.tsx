@@ -1,15 +1,21 @@
-import { useCallback } from 'react';
-import { ScrollView, View, Text, Pressable } from 'react-native';
+import { useCallback, useState } from 'react';
+import { ScrollView, View, Text, Pressable, Modal, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import * as FileSystem from 'expo-file-system/legacy';
+import * as Sharing from 'expo-sharing';
+import { useQueryClient } from '@tanstack/react-query';
 import { Colors } from '@/theme/colors';
 import { Spinner, Button, ProgressBar } from '@/components/ui';
 import { VisitHeader } from '@/components/visits/VisitHeader';
 import { RoomCard } from '@/components/visits/RoomCard';
+import { SignatureSheet } from '@/components/visits/SignatureSheet';
 import { useVisitDetail } from '@/hooks/useVisitDetail';
 import { useStartVisit } from '@/hooks/useStartVisit';
 import { useFinalizeVisit } from '@/hooks/useFinalizeVisit';
 import { useClaimReinspection } from '@/hooks/useClaimReinspection';
+import { reportService } from '@/services/visits.service';
+import { QUERY_KEYS } from '@/lib/constants';
 
 interface Props {
   id: number;
@@ -22,10 +28,35 @@ export function VisitDetailScreen({ id }: Props) {
   const { mutate: startVisit, isPending: isStartPending } = useStartVisit(id);
   const { mutate: finalizeVisit, isPending: isFinalizePending } = useFinalizeVisit(id);
   const { mutate: claimReinspection, isPending: isClaimPending } = useClaimReinspection(id);
+  const queryClient = useQueryClient();
+  const [showSignature, setShowSignature] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const handleStart = useCallback(() => startVisit(), [startVisit]);
   const handleFinalize = useCallback(() => finalizeVisit(), [finalizeVisit]);
   const handleClaim = useCallback(() => claimReinspection(), [claimReinspection]);
+
+  const handleSignatureSaved = useCallback(
+    (_url: string) => {
+      setShowSignature(false);
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.VISIT_DETAIL(id) });
+    },
+    [id],
+  );
+
+  const handleDownloadReport = useCallback(async () => {
+    setIsDownloading(true);
+    try {
+      const base64 = await reportService.downloadReport(id);
+      const path = `${FileSystem.documentDirectory}vistoria-${id}.pdf`;
+      await FileSystem.writeAsStringAsync(path, base64, { encoding: FileSystem.EncodingType.Base64 });
+      await Sharing.shareAsync(path, { mimeType: 'application/pdf', dialogTitle: 'Compartilhar Relatório' });
+    } catch {
+      Alert.alert('Erro', 'Não foi possível gerar o relatório.');
+    } finally {
+      setIsDownloading(false);
+    }
+  }, [id]);
 
   const handleRoomPress = useCallback(
     (roomId: number) => router.push(`/(app)/visits/${id}/rooms/${roomId}` as any),
@@ -70,6 +101,14 @@ export function VisitDetailScreen({ id }: Props) {
   const showBottomBar = isAvailable || isNotStarted || isOngoing;
 
   return (
+    <>
+    <Modal visible={showSignature} animationType="slide" onRequestClose={() => setShowSignature(false)}>
+      <SignatureSheet
+        visitId={id}
+        onSaved={handleSignatureSaved}
+        onCancel={() => setShowSignature(false)}
+      />
+    </Modal>
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.bg1 }} edges={['top']}>
       <Pressable
         onPress={() => router.back()}
@@ -155,6 +194,27 @@ export function VisitDetailScreen({ id }: Props) {
           />
         </View>
       )}
+
+      {isFinalized && (
+        <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: Math.max(insets.bottom, 16), borderTopWidth: 1, borderTopColor: Colors.border, gap: 10 }}>
+          {!visit.signatureUrl && (
+            <Button label="ASSINAR VISTORIA" onPress={() => setShowSignature(true)} fullWidth />
+          )}
+          <Pressable
+            onPress={handleDownloadReport}
+            disabled={isDownloading}
+            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: Colors.border, borderRadius: 8, paddingVertical: 14, gap: 8, opacity: isDownloading ? 0.5 : 1 }}
+          >
+            {isDownloading
+              ? <ActivityIndicator size="small" color={Colors.t2} />
+              : <Text style={{ color: Colors.t1, fontSize: 11, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 0.88, textTransform: 'uppercase' }}>
+                  {visit.signatureUrl ? '✓ ' : ''}BAIXAR RELATÓRIO
+                </Text>
+            }
+          </Pressable>
+        </View>
+      )}
     </SafeAreaView>
+    </>
   );
 }
