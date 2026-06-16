@@ -27,3 +27,11 @@ export const visitsService = {
   claimReinspection: (id: number): Promise<Visit> =>
     api.patch<Visit>(`/visits/${id}/claim`).then((r) => r.data),
 };
+
+export const pushService = {
+  saveToken: (token: string): Promise<void> =>
+    api.post('/users/me/push-token', { token, platform: 'android' }).then(() => undefined),
+
+  removeToken: (): Promise<void> =>
+    api.delete('/users/me/push-token').then(() => undefined),
+};
