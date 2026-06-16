@@ -20,6 +20,7 @@ function formatApt(apt: Visit['apartment']): string {
 
 export function VisitCard({ visit, onPress }: Props) {
   const statusColor = VisitStatusConfig[visit.status]?.color ?? Colors.pend;
+  const isReinspection = visit.type === 'REINSPECTION';
 
   return (
     <Pressable
@@ -47,7 +48,16 @@ export function VisitCard({ visit, onPress }: Props) {
           marginBottom: 6,
         }}
       >
-        <VisitStatusBadge status={visit.status} />
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <VisitStatusBadge status={visit.status} />
+          {isReinspection && (
+            <View style={{ backgroundColor: Colors.amberDim, borderRadius: 3, paddingHorizontal: 6, paddingVertical: 2 }}>
+              <Text style={{ color: Colors.amber, fontSize: 9, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 0.72 }}>
+                RE-INSPEÇÃO
+              </Text>
+            </View>
+          )}
+        </View>
         <Text
           style={{
             color: Colors.t3,

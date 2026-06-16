@@ -6,6 +6,7 @@ import { Colors } from '@/theme/colors';
 import { Spinner } from '@/components/ui';
 import { VisitCard } from '@/components/visits';
 import { useMyVisits } from '@/hooks/useMyVisits';
+import { useAvailableReinspections } from '@/hooks/useAvailableReinspections';
 import { useAuthStore } from '@/store/auth.store';
 import type { VisitStatus } from '@/types/visit.types';
 
@@ -35,6 +36,7 @@ export function VisitListScreen() {
   const user = useAuthStore((s) => s.user);
   const [activeFilter, setActiveFilter] = useState<FilterKey>('all');
   const { data: visits = [], isLoading, isError, isFetching, refetch } = useMyVisits();
+  const { data: availableReinspections = [] } = useAvailableReinspections();
 
   const filtered = useMemo(() => {
     if (activeFilter === 'all') return visits;
@@ -177,7 +179,6 @@ export function VisitListScreen() {
           ListEmptyComponent={
             <View
               style={{
-                flex: 1,
                 alignItems: 'center',
                 justifyContent: 'center',
                 paddingTop: 60,
@@ -215,6 +216,31 @@ export function VisitListScreen() {
                 {getEmptyMessage(activeFilter)}
               </Text>
             </View>
+          }
+          ListFooterComponent={
+            availableReinspections.length > 0 ? (
+              <View style={{ marginTop: 24 }}>
+                <Text
+                  style={{
+                    color: Colors.t3,
+                    fontSize: 9,
+                    fontFamily: 'IBMPlexMono_600SemiBold',
+                    letterSpacing: 1.08,
+                    textTransform: 'uppercase',
+                    marginBottom: 10,
+                  }}
+                >
+                  RE-INSPEÇÕES DISPONÍVEIS
+                </Text>
+                {availableReinspections.map((item) => (
+                  <VisitCard
+                    key={item.id}
+                    visit={item}
+                    onPress={() => router.push(`/(app)/visits/${String(item.id)}` as any)}
+                  />
+                ))}
+              </View>
+            ) : null
           }
         />
       )}

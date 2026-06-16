@@ -9,6 +9,7 @@ import { RoomCard } from '@/components/visits/RoomCard';
 import { useVisitDetail } from '@/hooks/useVisitDetail';
 import { useStartVisit } from '@/hooks/useStartVisit';
 import { useFinalizeVisit } from '@/hooks/useFinalizeVisit';
+import { useClaimReinspection } from '@/hooks/useClaimReinspection';
 
 interface Props {
   id: number;
@@ -20,9 +21,11 @@ export function VisitDetailScreen({ id }: Props) {
   const { data: visit, isLoading, isError, refetch } = useVisitDetail(id);
   const { mutate: startVisit, isPending: isStartPending } = useStartVisit(id);
   const { mutate: finalizeVisit, isPending: isFinalizePending } = useFinalizeVisit(id);
+  const { mutate: claimReinspection, isPending: isClaimPending } = useClaimReinspection(id);
 
   const handleStart = useCallback(() => startVisit(), [startVisit]);
   const handleFinalize = useCallback(() => finalizeVisit(), [finalizeVisit]);
+  const handleClaim = useCallback(() => claimReinspection(), [claimReinspection]);
 
   const handleRoomPress = useCallback(
     (roomId: number) => router.push(`/(app)/visits/${id}/rooms/${roomId}` as any),
@@ -54,6 +57,8 @@ export function VisitDetailScreen({ id }: Props) {
   const isNotStarted = visit.status === 'NOT_STARTED';
   const isOngoing = visit.status === 'ONGOING';
   const isFinalized = visit.status === 'FINALIZED';
+  const isReinspection = visit.type === 'REINSPECTION';
+  const isAvailable = isReinspection && visit.inspector === null;
 
   const completed = visit.rooms.filter((r) => r.isComplete).length;
   const total = visit.rooms.length;
@@ -62,7 +67,7 @@ export function VisitDetailScreen({ id }: Props) {
     .flatMap((r) => r.items)
     .every((i) => i.status !== null);
 
-  const showBottomBar = isNotStarted || isOngoing;
+  const showBottomBar = isAvailable || isNotStarted || isOngoing;
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.bg1 }} edges={['top']}>
@@ -82,6 +87,17 @@ export function VisitDetailScreen({ id }: Props) {
       >
         <VisitHeader visit={visit} />
 
+        {isReinspection && (
+          <View style={{ marginHorizontal: 20, marginBottom: 12, flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: Colors.amberDim, borderRadius: 6, paddingHorizontal: 12, paddingVertical: 10 }}>
+            <Text style={{ color: Colors.amber, fontSize: 11, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 0.72 }}>
+              ◆ RE-INSPEÇÃO
+            </Text>
+            <Text style={{ color: Colors.t2, fontSize: 11, fontFamily: 'IBMPlexSans_400Regular', flex: 1 }}>
+              {isAvailable ? 'Disponível para assumir' : `Itens com NC da vistoria anterior`}
+            </Text>
+          </View>
+        )}
+
         {(isOngoing || isFinalized) && (
           <View style={{ paddingHorizontal: 20, marginBottom: 20 }}>
             <Text style={{ color: Colors.t2, fontSize: 12, fontFamily: 'IBMPlexMono_400Regular', marginBottom: 8 }}>
@@ -100,16 +116,27 @@ export function VisitDetailScreen({ id }: Props) {
             <RoomCard
               key={room.id}
               room={room}
-              onPress={isOngoing || isFinalized ? () => handleRoomPress(room.id) : undefined}
+              onPress={!isAvailable && (isOngoing || isFinalized) ? () => handleRoomPress(room.id) : undefined}
             />
           ))}
         </View>
       </ScrollView>
 
-      {isNotStarted && (
+      {isAvailable && (
         <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: Math.max(insets.bottom, 16), borderTopWidth: 1, borderTopColor: Colors.border }}>
           <Button
-            label="INICIAR VISTORIA"
+            label="ASSUMIR RE-INSPEÇÃO"
+            onPress={handleClaim}
+            loading={isClaimPending}
+            fullWidth
+          />
+        </View>
+      )}
+
+      {!isAvailable && isNotStarted && (
+        <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: Math.max(insets.bottom, 16), borderTopWidth: 1, borderTopColor: Colors.border }}>
+          <Button
+            label={isReinspection ? 'INICIAR RE-INSPEÇÃO' : 'INICIAR VISTORIA'}
             onPress={handleStart}
             loading={isStartPending}
             fullWidth
@@ -120,7 +147,7 @@ export function VisitDetailScreen({ id }: Props) {
       {isOngoing && (
         <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: Math.max(insets.bottom, 16), borderTopWidth: 1, borderTopColor: Colors.border }}>
           <Button
-            label="FINALIZAR VISTORIA"
+            label={isReinspection ? 'FINALIZAR RE-INSPEÇÃO' : 'FINALIZAR VISTORIA'}
             onPress={handleFinalize}
             loading={isFinalizePending}
             disabled={!allEvaluated}

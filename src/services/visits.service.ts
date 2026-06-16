@@ -20,4 +20,10 @@ export const visitsService = {
 
   finalizeVisit: (id: number): Promise<Visit> =>
     api.patch<Visit>(`/visits/${id}`, { status: 'FINALIZED' }).then((r) => r.data),
+
+  getAvailableReinspections: (): Promise<Visit[]> =>
+    api.get<Visit[]>('/visits/available-reinspections').then((r) => r.data),
+
+  claimReinspection: (id: number): Promise<Visit> =>
+    api.patch<Visit>(`/visits/${id}/claim`).then((r) => r.data),
 };
