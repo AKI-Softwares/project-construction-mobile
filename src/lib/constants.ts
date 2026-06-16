@@ -4,4 +4,5 @@ export const QUERY_KEYS = {
   ME: ['auth', 'me'] as const,
   VISITS_MINE: ['visits', 'mine'] as const,
   VISIT_DETAIL: (id: number) => ['visits', id] as const,
+  REINSPECTIONS_AVAILABLE: ['visits', 'reinspections', 'available'] as const,
 } as const;

@@ -1,4 +1,5 @@
 export type VisitStatus = 'NOT_STARTED' | 'ONGOING' | 'FINALIZED';
+export type VisitType = 'INITIAL' | 'REINSPECTION';
 
 export interface Building {
   name: string;
@@ -13,7 +14,10 @@ export interface Apartment {
 
 export interface Visit {
   id: number;
+  type: VisitType;
   status: VisitStatus;
+  inspectorId: number | null;
+  parentVisitId: number | null;
   createdAt: string;
   apartment: Apartment;
 }
@@ -26,6 +30,8 @@ export interface Photo {
 export interface NonConformity {
   id: number;
   description: string;
+  resolvedAt: string | null;
+  resolvedById: number | null;
   photos: Photo[];
 }
 
@@ -53,6 +59,6 @@ export interface VisitDetail extends Visit {
   checklistId: number;
   observations: string | null;
   finalizedAt: string | null;
-  inspector: Inspector;
+  inspector: Inspector | null;
   rooms: Room[];
 }
