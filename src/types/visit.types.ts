@@ -18,6 +18,7 @@ export interface Visit {
   status: VisitStatus;
   inspectorId: number | null;
   parentVisitId: number | null;
+  scheduledFor: string | null;
   createdAt: string;
   apartment: Apartment;
 }

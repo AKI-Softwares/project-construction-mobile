@@ -61,6 +61,22 @@ export const VisitHeader = memo(function VisitHeader({ visit }: Props) {
       >
         {formatDate(visit.createdAt)}
       </Text>
+      {visit.scheduledFor && (() => {
+        const overdue = visit.status !== 'FINALIZED' && new Date(visit.scheduledFor) < new Date();
+        return (
+          <Text
+            style={{
+              color: overdue ? Colors.nc : Colors.t2,
+              fontSize: 11,
+              fontFamily: 'IBMPlexMono_400Regular',
+              marginTop: 4,
+            }}
+          >
+            {overdue ? '⚠ Em atraso · ' : 'Prevista: '}
+            {formatDate(visit.scheduledFor)}
+          </Text>
+        );
+      })()}
     </View>
   );
 });
