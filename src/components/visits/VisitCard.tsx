@@ -18,9 +18,15 @@ function formatApt(apt: Visit['apartment']): string {
   return `Apt ${apt.identifier} · Bloco ${apt.block} · ${apt.floor}º Andar`;
 }
 
+function isOverdue(scheduledFor: string | null, status: Visit['status']): boolean {
+  if (!scheduledFor || status === 'FINALIZED') return false;
+  return new Date(scheduledFor) < new Date();
+}
+
 export function VisitCard({ visit, onPress }: Props) {
   const statusColor = VisitStatusConfig[visit.status]?.color ?? Colors.pend;
   const isReinspection = visit.type === 'REINSPECTION';
+  const overdue = isOverdue(visit.scheduledFor, visit.status);
 
   return (
     <Pressable
@@ -88,6 +94,18 @@ export function VisitCard({ visit, onPress }: Props) {
       >
         {formatApt(visit.apartment)}
       </Text>
+      {visit.scheduledFor && (
+        <Text
+          style={{
+            color: overdue ? Colors.nc : Colors.t3,
+            fontSize: 11,
+            fontFamily: 'IBMPlexMono_400Regular',
+            marginTop: 6,
+          }}
+        >
+          {overdue ? '⚠ ' : ''}Prevista: {formatDate(visit.scheduledFor)}
+        </Text>
+      )}
     </Pressable>
   );
 }
