@@ -28,3 +28,4 @@ android/app/build/
 android/app/debug.keystore
 
 .playwright-mcp
+build.apk

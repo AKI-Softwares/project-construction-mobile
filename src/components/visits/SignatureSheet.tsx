@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, Alert, useWindowDimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SignatureCanvas, { type SignatureViewRef } from 'react-native-signature-canvas';
 import { reportService } from '@/services/visits.service';
 
@@ -12,6 +13,12 @@ type Props = {
 export function SignatureSheet({ visitId, onSaved, onCancel }: Props) {
   const ref = useRef<SignatureViewRef>(null);
   const [saving, setSaving] = useState(false);
+  const insets = useSafeAreaInsets();
+  const { height: screenHeight } = useWindowDimensions();
+
+  const HEADER_HEIGHT = 52;
+  const FOOTER_HEIGHT = 72;
+  const canvasHeight = screenHeight - insets.top - insets.bottom - HEADER_HEIGHT - FOOTER_HEIGHT;
 
   function handleOk(signature: string) {
     const base64 = signature.replace(/^data:image\/png;base64,/, '');
@@ -19,7 +26,7 @@ export function SignatureSheet({ visitId, onSaved, onCancel }: Props) {
     reportService
       .saveSignature(visitId, base64)
       .then((res) => {
-        if (res.signatureUrl) onSaved(res.signatureUrl);
+        onSaved(res.signatureUrl ?? '');
       })
       .catch(() => Alert.alert('Erro', 'Não foi possível salvar a assinatura.'))
       .finally(() => setSaving(false));
@@ -34,38 +41,53 @@ export function SignatureSheet({ visitId, onSaved, onCancel }: Props) {
   }
 
   return (
-    <View className="flex-1 bg-white">
-      <View className="flex-row items-center justify-between px-4 py-3 border-b border-neutral-200">
-        <TouchableOpacity onPress={onCancel}>
-          <Text className="text-base text-neutral-500">Cancelar</Text>
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+      <View style={{
+        paddingTop: insets.top + 8,
+        paddingBottom: 12,
+        paddingHorizontal: 16,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderBottomWidth: 1,
+        borderBottomColor: '#e5e5e5',
+      }}>
+        <TouchableOpacity onPress={onCancel} hitSlop={12}>
+          <Text style={{ fontSize: 16, color: '#737373' }}>Cancelar</Text>
         </TouchableOpacity>
-        <Text className="text-base font-semibold text-neutral-800">Assinar vistoria</Text>
-        <TouchableOpacity onPress={handleClear}>
-          <Text className="text-base text-neutral-500">Limpar</Text>
+        <Text style={{ fontSize: 16, fontWeight: '600', color: '#1a1a1a' }}>Assinar vistoria</Text>
+        <TouchableOpacity onPress={handleClear} hitSlop={12}>
+          <Text style={{ fontSize: 16, color: '#737373' }}>Limpar</Text>
         </TouchableOpacity>
       </View>
 
-      <View className="flex-1">
+      <View style={{ height: canvasHeight }}>
         <SignatureCanvas
           ref={ref}
           onOK={handleOk}
           onEmpty={() => Alert.alert('Atenção', 'Por favor, assine antes de confirmar.')}
-          descriptionText="Assine no espaço abaixo"
+          descriptionText=""
           clearText="Limpar"
           confirmText="Confirmar"
-          webStyle={`.m-signature-pad { box-shadow: none; border: none; } .m-signature-pad--footer { display: none; }`}
+          webStyle={`.m-signature-pad { box-shadow: none; border: none; width: 100%; height: 100%; } .m-signature-pad--footer { display: none; }`}
         />
       </View>
 
-      <View className="px-4 py-4 border-t border-neutral-200">
+      <View style={{
+        paddingHorizontal: 16,
+        paddingTop: 12,
+        paddingBottom: Math.max(insets.bottom, 16),
+        borderTopWidth: 1,
+        borderTopColor: '#e5e5e5',
+      }}>
         {saving ? (
           <ActivityIndicator size="small" />
         ) : (
           <TouchableOpacity
             onPress={handleConfirm}
-            className="bg-amber-500 rounded-xl py-4 items-center"
+            style={{ backgroundColor: '#F59E0B', borderRadius: 12, paddingVertical: 16, alignItems: 'center' }}
           >
-            <Text className="text-white font-semibold text-base">Confirmar assinatura</Text>
+            <Text style={{ color: '#fff', fontWeight: '600', fontSize: 16 }}>Confirmar assinatura</Text>
           </TouchableOpacity>
         )}
       </View>

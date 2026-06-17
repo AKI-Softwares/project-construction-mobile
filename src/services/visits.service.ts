@@ -3,6 +3,7 @@ import type { Visit, VisitDetail, VisitItem } from '@/types/visit.types';
 
 type StatusFilter = string & { readonly __brand: 'StatusFilter' };
 export const ACTIVE_VISITS_FILTER = 'NOT_STARTED,ONGOING' as StatusFilter;
+export const FINALIZED_VISITS_FILTER = 'FINALIZED' as StatusFilter;
 
 export const visitsService = {
   getMyVisits: (status?: StatusFilter): Promise<Visit[]> =>

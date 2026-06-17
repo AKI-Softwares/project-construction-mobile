@@ -172,7 +172,7 @@ export function LoginScreen() {
           {/* Rodapé */}
           <View className="flex-row justify-between px-7 pb-8">
             <Text className="font-mono text-[9px] text-t3 tracking-[0.06em]">v1.0.0</Text>
-            <Text className="font-mono text-[9px] text-t3 tracking-[0.04em]">CheckObra Engenharia</Text>
+            <Text className="font-mono text-[9px] text-t3 tracking-[0.04em]">AKI Softwares</Text>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
