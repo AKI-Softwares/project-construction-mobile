@@ -1,9 +1,10 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ScrollView, View, Text, Pressable, Modal, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
+import * as SecureStore from 'expo-secure-store';
 import { useQueryClient } from '@tanstack/react-query';
 import { Colors } from '@/theme/colors';
 import { Spinner, Button, ProgressBar } from '@/components/ui';
@@ -16,6 +17,24 @@ import { useFinalizeVisit } from '@/hooks/useFinalizeVisit';
 import { useClaimReinspection } from '@/hooks/useClaimReinspection';
 import { reportService } from '@/services/visits.service';
 import { QUERY_KEYS } from '@/lib/constants';
+
+const SIGNED_KEY = 'signed_visit_ids';
+
+async function getSignedIds(): Promise<number[]> {
+  try {
+    const raw = await SecureStore.getItemAsync(SIGNED_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+async function markSigned(id: number): Promise<void> {
+  const ids = await getSignedIds();
+  if (!ids.includes(id)) {
+    await SecureStore.setItemAsync(SIGNED_KEY, JSON.stringify([...ids, id]));
+  }
+}
 
 interface Props {
   id: number;
@@ -31,6 +50,13 @@ export function VisitDetailScreen({ id }: Props) {
   const queryClient = useQueryClient();
   const [showSignature, setShowSignature] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [persistedSigned, setPersistedSigned] = useState(false);
+
+  useEffect(() => {
+    getSignedIds().then((ids) => {
+      if (ids.includes(id)) setPersistedSigned(true);
+    });
+  }, [id]);
 
   const handleStart = useCallback(() => startVisit(), [startVisit]);
   const handleFinalize = useCallback(() => finalizeVisit(), [finalizeVisit]);
@@ -38,10 +64,12 @@ export function VisitDetailScreen({ id }: Props) {
 
   const handleSignatureSaved = useCallback(
     (_url: string) => {
+      setPersistedSigned(true);
       setShowSignature(false);
+      markSigned(id);
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.VISIT_DETAIL(id) });
     },
-    [id],
+    [id, queryClient],
   );
 
   const handleDownloadReport = useCallback(async () => {
@@ -197,21 +225,22 @@ export function VisitDetailScreen({ id }: Props) {
 
       {isFinalized && (
         <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: Math.max(insets.bottom, 16), borderTopWidth: 1, borderTopColor: Colors.border, gap: 10 }}>
-          {!visit.signatureUrl && (
+          {!(persistedSigned || visit.signatureUrl) ? (
             <Button label="ASSINAR VISTORIA" onPress={() => setShowSignature(true)} fullWidth />
+          ) : (
+            <Pressable
+              onPress={handleDownloadReport}
+              disabled={isDownloading}
+              style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: Colors.border, borderRadius: 8, paddingVertical: 14, gap: 8, opacity: isDownloading ? 0.5 : 1 }}
+            >
+              {isDownloading
+                ? <ActivityIndicator size="small" color={Colors.t2} />
+                : <Text style={{ color: Colors.t1, fontSize: 11, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 0.88, textTransform: 'uppercase' }}>
+                    ✓ BAIXAR RELATÓRIO ASSINADO
+                  </Text>
+              }
+            </Pressable>
           )}
-          <Pressable
-            onPress={handleDownloadReport}
-            disabled={isDownloading}
-            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: Colors.border, borderRadius: 8, paddingVertical: 14, gap: 8, opacity: isDownloading ? 0.5 : 1 }}
-          >
-            {isDownloading
-              ? <ActivityIndicator size="small" color={Colors.t2} />
-              : <Text style={{ color: Colors.t1, fontSize: 11, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 0.88, textTransform: 'uppercase' }}>
-                  {visit.signatureUrl ? '✓ ' : ''}BAIXAR RELATÓRIO
-                </Text>
-            }
-          </Pressable>
         </View>
       )}
     </SafeAreaView>

@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import { useRouter } from 'expo-router';
+import Constants from 'expo-constants';
 import { pushService } from '@/services/visits.service';
 import { useAuthStore } from '@/store/auth.store';
 
@@ -28,7 +29,8 @@ export function usePushNotifications() {
       const { status } = await Notifications.requestPermissionsAsync();
       if (status !== 'granted') return;
 
-      const pushToken = await Notifications.getExpoPushTokenAsync();
+      const projectId = Constants.expoConfig?.extra?.projectId as string;
+      const pushToken = await Notifications.getExpoPushTokenAsync({ projectId });
       await pushService.saveToken(pushToken.data).catch(() => {});
       registered = true;
     }

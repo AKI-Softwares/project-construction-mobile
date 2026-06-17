@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Colors } from '@/theme/colors';
@@ -44,16 +44,16 @@ export function VisitListScreen() {
     isLoading: isLoadingFinalized,
     isFetching: isFetchingFinalized,
     refetch: refetchFinalized,
-  } = useMyFinalizedVisits(activeFilter === 'FINALIZED');
+  } = useMyFinalizedVisits(activeFilter === 'FINALIZED' || activeFilter === 'all');
   const { data: availableReinspections = [] } = useAvailableReinspections();
 
   const filtered = useMemo(() => {
     if (activeFilter === 'FINALIZED') return finalizedVisits;
-    if (activeFilter === 'all') return visits;
+    if (activeFilter === 'all') return [...visits, ...finalizedVisits];
     return visits.filter((v) => v.status === activeFilter);
   }, [visits, finalizedVisits, activeFilter]);
 
-  const showingFinalized = activeFilter === 'FINALIZED';
+  const showingFinalized = activeFilter === 'FINALIZED' || activeFilter === 'all';
   if (isLoading || (showingFinalized && isLoadingFinalized)) return <Spinner fullScreen />;
 
   return (
@@ -99,13 +99,11 @@ export function VisitListScreen() {
       </View>
 
       {/* Filter chips */}
-      <View
-        style={{
-          flexDirection: 'row',
-          gap: 8,
-          paddingHorizontal: 20,
-          marginBottom: 14,
-        }}
+      <View style={{ flexDirection: 'row', marginBottom: 14 }}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ gap: 8, paddingHorizontal: 20 }}
       >
         {FILTERS.map((f) => {
           const active = activeFilter === f.key;
@@ -136,6 +134,7 @@ export function VisitListScreen() {
             </Pressable>
           );
         })}
+      </ScrollView>
       </View>
 
       {/* Error state */}
@@ -179,8 +178,8 @@ export function VisitListScreen() {
           data={filtered}
           keyExtractor={(item) => String(item.id)}
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24, flexGrow: 1 }}
-          refreshing={showingFinalized ? (isFetchingFinalized && !isLoadingFinalized) : (isFetching && !isLoading)}
-          onRefresh={showingFinalized ? refetchFinalized : refetch}
+          refreshing={(isFetching && !isLoading) || (showingFinalized && isFetchingFinalized && !isLoadingFinalized)}
+          onRefresh={() => { refetch(); if (showingFinalized) refetchFinalized(); }}
           renderItem={({ item }) => (
             <VisitCard
               visit={item}
