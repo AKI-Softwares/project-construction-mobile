@@ -6,6 +6,7 @@ import { Colors } from '@/theme/colors';
 import { Spinner } from '@/components/ui';
 import { VisitCard } from '@/components/visits';
 import { useMyVisits } from '@/hooks/useMyVisits';
+import { useMyFinalizedVisits } from '@/hooks/useMyFinalizedVisits';
 import { useAvailableReinspections } from '@/hooks/useAvailableReinspections';
 import { useAuthStore } from '@/store/auth.store';
 import type { VisitStatus } from '@/types/visit.types';
@@ -16,6 +17,7 @@ const FILTERS: { key: FilterKey; label: string }[] = [
   { key: 'all', label: 'TODAS' },
   { key: 'NOT_STARTED', label: 'PENDENTES' },
   { key: 'ONGOING', label: 'EM ANDAMENTO' },
+  { key: 'FINALIZED', label: 'FINALIZADAS' },
 ];
 
 function getGreeting(): string {
@@ -28,6 +30,7 @@ function getGreeting(): string {
 function getEmptyMessage(filter: FilterKey): string {
   if (filter === 'NOT_STARTED') return 'Nenhuma vistoria pendente';
   if (filter === 'ONGOING') return 'Nenhuma vistoria em andamento';
+  if (filter === 'FINALIZED') return 'Nenhuma vistoria finalizada';
   return 'Nenhuma vistoria atribuída';
 }
 
@@ -36,14 +39,22 @@ export function VisitListScreen() {
   const user = useAuthStore((s) => s.user);
   const [activeFilter, setActiveFilter] = useState<FilterKey>('all');
   const { data: visits = [], isLoading, isError, isFetching, refetch } = useMyVisits();
+  const {
+    data: finalizedVisits = [],
+    isLoading: isLoadingFinalized,
+    isFetching: isFetchingFinalized,
+    refetch: refetchFinalized,
+  } = useMyFinalizedVisits(activeFilter === 'FINALIZED');
   const { data: availableReinspections = [] } = useAvailableReinspections();
 
   const filtered = useMemo(() => {
+    if (activeFilter === 'FINALIZED') return finalizedVisits;
     if (activeFilter === 'all') return visits;
     return visits.filter((v) => v.status === activeFilter);
-  }, [visits, activeFilter]);
+  }, [visits, finalizedVisits, activeFilter]);
 
-  if (isLoading) return <Spinner fullScreen />;
+  const showingFinalized = activeFilter === 'FINALIZED';
+  if (isLoading || (showingFinalized && isLoadingFinalized)) return <Spinner fullScreen />;
 
   return (
     <SafeAreaView className="flex-1 bg-bg1">
@@ -168,8 +179,8 @@ export function VisitListScreen() {
           data={filtered}
           keyExtractor={(item) => String(item.id)}
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24, flexGrow: 1 }}
-          refreshing={isFetching && !isLoading}
-          onRefresh={refetch}
+          refreshing={showingFinalized ? (isFetchingFinalized && !isLoadingFinalized) : (isFetching && !isLoading)}
+          onRefresh={showingFinalized ? refetchFinalized : refetch}
           renderItem={({ item }) => (
             <VisitCard
               visit={item}
