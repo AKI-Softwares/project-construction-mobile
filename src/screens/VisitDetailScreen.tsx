@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ScrollView, View, Text, Pressable, Modal, Alert, ActivityIndicator } from 'react-native';
+import { ScrollView, View, Text, Pressable, Modal, ActivityIndicator } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as FileSystem from 'expo-file-system/legacy';
@@ -17,6 +17,7 @@ import { useFinalizeVisit } from '@/hooks/useFinalizeVisit';
 import { useClaimReinspection } from '@/hooks/useClaimReinspection';
 import { reportService } from '@/services/visits.service';
 import { QUERY_KEYS } from '@/lib/constants';
+import { showToast } from '@/lib/toast';
 
 const SIGNED_KEY = 'signed_visit_ids';
 
@@ -68,6 +69,7 @@ export function VisitDetailScreen({ id }: Props) {
       setShowSignature(false);
       markSigned(id);
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.VISIT_DETAIL(id) });
+      showToast('success', 'Assinatura salva');
     },
     [id, queryClient],
   );
@@ -79,8 +81,9 @@ export function VisitDetailScreen({ id }: Props) {
       const path = `${FileSystem.documentDirectory}vistoria-${id}.pdf`;
       await FileSystem.writeAsStringAsync(path, base64, { encoding: FileSystem.EncodingType.Base64 });
       await Sharing.shareAsync(path, { mimeType: 'application/pdf', dialogTitle: 'Compartilhar Relatório' });
+      showToast('success', 'Relatório baixado');
     } catch {
-      Alert.alert('Erro', 'Não foi possível gerar o relatório.');
+      showToast('error', 'Não foi possível gerar o relatório');
     } finally {
       setIsDownloading(false);
     }

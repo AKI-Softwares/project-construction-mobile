@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { QUERY_KEYS } from '@/lib/constants';
 import { photosService } from '@/services/photos.service';
+import { showToast } from '@/lib/toast';
 import type { LocalPhoto } from '@/types/nc.types';
 
 export function usePhoto(visitId: number) {
@@ -11,7 +12,9 @@ export function usePhoto(visitId: number) {
       photosService.add(ncId, photo),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.VISIT_DETAIL(visitId) });
+      showToast('success', 'Foto adicionada');
     },
+    onError: () => showToast('error', 'Erro ao adicionar foto'),
   });
 
   const deleteMutation = useMutation({
@@ -19,7 +22,9 @@ export function usePhoto(visitId: number) {
       photosService.remove(ncId, photoId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.VISIT_DETAIL(visitId) });
+      showToast('success', 'Foto removida');
     },
+    onError: () => showToast('error', 'Erro ao remover foto'),
   });
 
   return { addMutation, deleteMutation };

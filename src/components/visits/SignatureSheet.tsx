@@ -1,8 +1,10 @@
 import { useRef, useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, Alert, useWindowDimensions } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SignatureCanvas, { type SignatureViewRef } from 'react-native-signature-canvas';
 import { reportService } from '@/services/visits.service';
+import { showToast } from '@/lib/toast';
+import { Colors } from '@/theme/colors';
 
 type Props = {
   visitId: number;
@@ -28,7 +30,7 @@ export function SignatureSheet({ visitId, onSaved, onCancel }: Props) {
       .then((res) => {
         onSaved(res.signatureUrl ?? '');
       })
-      .catch(() => Alert.alert('Erro', 'Não foi possível salvar a assinatura.'))
+      .catch(() => showToast('error', 'Não foi possível salvar a assinatura'))
       .finally(() => setSaving(false));
   }
 
@@ -50,14 +52,14 @@ export function SignatureSheet({ visitId, onSaved, onCancel }: Props) {
         alignItems: 'center',
         justifyContent: 'space-between',
         borderBottomWidth: 1,
-        borderBottomColor: '#e5e5e5',
+        borderBottomColor: Colors.border,
       }}>
         <TouchableOpacity onPress={onCancel} hitSlop={12}>
-          <Text style={{ fontSize: 16, color: '#737373' }}>Cancelar</Text>
+          <Text style={{ fontSize: 16, color: Colors.t2 }}>Cancelar</Text>
         </TouchableOpacity>
-        <Text style={{ fontSize: 16, fontWeight: '600', color: '#1a1a1a' }}>Assinar vistoria</Text>
+        <Text style={{ fontSize: 16, fontWeight: '600', color: Colors.t1 }}>Assinar vistoria</Text>
         <TouchableOpacity onPress={handleClear} hitSlop={12}>
-          <Text style={{ fontSize: 16, color: '#737373' }}>Limpar</Text>
+          <Text style={{ fontSize: 16, color: Colors.t2 }}>Limpar</Text>
         </TouchableOpacity>
       </View>
 
@@ -65,7 +67,7 @@ export function SignatureSheet({ visitId, onSaved, onCancel }: Props) {
         <SignatureCanvas
           ref={ref}
           onOK={handleOk}
-          onEmpty={() => Alert.alert('Atenção', 'Por favor, assine antes de confirmar.')}
+          onEmpty={() => showToast('info', 'Por favor, assine antes de confirmar')}
           descriptionText=""
           clearText="Limpar"
           confirmText="Confirmar"
@@ -78,14 +80,14 @@ export function SignatureSheet({ visitId, onSaved, onCancel }: Props) {
         paddingTop: 12,
         paddingBottom: Math.max(insets.bottom, 16),
         borderTopWidth: 1,
-        borderTopColor: '#e5e5e5',
+        borderTopColor: Colors.border,
       }}>
         {saving ? (
           <ActivityIndicator size="small" />
         ) : (
           <TouchableOpacity
             onPress={handleConfirm}
-            style={{ backgroundColor: '#F59E0B', borderRadius: 12, paddingVertical: 16, alignItems: 'center' }}
+            style={{ backgroundColor: Colors.amber, borderRadius: 12, paddingVertical: 16, alignItems: 'center' }}
           >
             <Text style={{ color: '#fff', fontWeight: '600', fontSize: 16 }}>Confirmar assinatura</Text>
           </TouchableOpacity>

@@ -1,5 +1,5 @@
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios';
@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { authService } from '@/services/auth.service';
 import { useAuthStore } from '@/store/auth.store';
+import { showToast } from '@/lib/toast';
 
 const schema = z.object({
   currentPassword: z.string().min(1, 'Obrigatório'),
@@ -35,6 +36,7 @@ export function ChangePasswordScreen() {
     try {
       await authService.changePassword(data.currentPassword, data.newPassword);
       clearMustChangePassword();
+      showToast('success', 'Senha alterada com sucesso');
       if (isVoluntary) {
         router.back();
       } else {
@@ -43,9 +45,9 @@ export function ChangePasswordScreen() {
     } catch (error: unknown) {
       const status = (error as AxiosError)?.response?.status;
       if (status === 401) {
-        Alert.alert('Erro', 'Senha atual incorreta.');
+        showToast('error', 'Senha atual incorreta');
       } else {
-        Alert.alert('Erro', 'Não foi possível alterar a senha. Tente novamente.');
+        showToast('error', 'Não foi possível alterar a senha');
       }
     }
   };

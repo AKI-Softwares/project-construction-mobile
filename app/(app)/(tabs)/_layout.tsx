@@ -1,21 +1,19 @@
 import { Tabs } from 'expo-router';
 import { Text } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '@/theme';
 
 function TabIcon({ label, active }: { label: string; active: boolean }) {
   return (
-    <Text
-      style={{
-        fontSize: 18,
-        color: active ? Colors.amber : Colors.t3,
-      }}
-    >
+    <Text style={{ fontSize: 18, color: active ? Colors.amber : Colors.t3 }}>
       {label}
     </Text>
   );
 }
 
 export default function TabsLayout() {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tabs
       screenOptions={{
@@ -25,8 +23,8 @@ export default function TabsLayout() {
           borderTopColor: Colors.border,
           borderTopWidth: 1,
           paddingTop: 10,
-          paddingBottom: 28,
-          height: 72,
+          paddingBottom: insets.bottom + 8,
+          height: 56 + insets.bottom,
         },
         tabBarActiveTintColor: Colors.amber,
         tabBarInactiveTintColor: Colors.t3,
@@ -43,18 +41,14 @@ export default function TabsLayout() {
         name="visits"
         options={{
           title: 'Visitas',
-          tabBarIcon: ({ focused }) => (
-            <TabIcon label="◫" active={focused} />
-          ),
+          tabBarIcon: ({ focused }) => <TabIcon label="◫" active={focused} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Perfil',
-          tabBarIcon: ({ focused }) => (
-            <TabIcon label="◉" active={focused} />
-          ),
+          tabBarIcon: ({ focused }) => <TabIcon label="◉" active={focused} />,
         }}
       />
     </Tabs>
