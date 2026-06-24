@@ -8,6 +8,7 @@ import type { BottomSheetBackdropProps } from '@gorhom/bottom-sheet';
 import type { AxiosError } from 'axios';
 import { useQueryClient } from '@tanstack/react-query';
 import { Colors } from '@/theme/colors';
+import { showToast } from '@/lib/toast';
 import { Button } from '@/components/ui';
 import { NCForm } from './NCForm';
 import { useEvaluateItem } from '@/hooks/useEvaluateItem';
@@ -55,7 +56,6 @@ export const EvaluationSheet = memo(function EvaluationSheet({
   const [sheetState, setSheetState] = useState<SheetState>('eval');
   const [ncDraft, setNcDraft] = useState<NCDraft>(EMPTY_DRAFT);
   const [isSaving, setIsSaving] = useState(false);
-  const [validationError, setValidationError] = useState<string | null>(null);
   const [pendingStatus, setPendingStatus] = useState<'OK' | 'NOK' | null>(null);
 
   const {
@@ -69,7 +69,6 @@ export const EvaluationSheet = memo(function EvaluationSheet({
     if (item) {
       resetEval();
       setPendingStatus(null);
-      setValidationError(null);
       setIsSaving(false);
 
       if (item.status === 'NOK' || isFinalized) {
@@ -145,39 +144,33 @@ export const EvaluationSheet = memo(function EvaluationSheet({
       ncDraft.removedPhotoIds.length;
 
     if (ncDraft.description.trim() === '') {
-      setValidationError('Descrição é obrigatória');
+      showToast('error', 'Descrição é obrigatória');
       return;
     }
     if (totalPhotos < 1) {
-      setValidationError('Adicione ao menos 1 foto');
+      showToast('error', 'Adicione ao menos 1 foto');
       return;
     }
 
     setIsSaving(true);
-    setValidationError(null);
 
     try {
       if (!item.nonConformity) {
         const nc = await nonConformitiesService.create(item.id, ncDraft.description.trim());
-        for (const photo of ncDraft.localPhotos) {
-          await photosService.add(nc.id, photo);
-        }
+        await Promise.all(ncDraft.localPhotos.map((photo) => photosService.add(nc.id, photo)));
       } else {
         const ncId = item.nonConformity.id;
         if (ncDraft.description.trim() !== item.nonConformity.description) {
           await nonConformitiesService.patch(ncId, ncDraft.description.trim());
         }
-        for (const photoId of ncDraft.removedPhotoIds) {
-          await photosService.remove(ncId, photoId);
-        }
-        for (const photo of ncDraft.localPhotos) {
-          await photosService.add(ncId, photo);
-        }
+        await Promise.all(ncDraft.removedPhotoIds.map((photoId) => photosService.remove(ncId, photoId)));
+        await Promise.all(ncDraft.localPhotos.map((photo) => photosService.add(ncId, photo)));
       }
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.VISIT_DETAIL(visitId) });
+      showToast('success', 'Não conformidade salva');
       onClose();
     } catch {
-      setValidationError('Erro ao salvar. Tente novamente.');
+      showToast('error', 'Erro ao salvar. Tente novamente.');
     } finally {
       setIsSaving(false);
     }
@@ -302,20 +295,6 @@ export const EvaluationSheet = memo(function EvaluationSheet({
             onChange={setNcDraft}
             disabled={isFinalized || isSaving}
           />
-        )}
-
-        {validationError != null && (
-          <Text
-            style={{
-              color: Colors.nc,
-              fontSize: 12,
-              fontFamily: 'IBMPlexSans_400Regular',
-              marginTop: 12,
-              textAlign: 'center',
-            }}
-          >
-            {validationError}
-          </Text>
         )}
 
         {evalErrorMessage != null && sheetState === 'eval' && (

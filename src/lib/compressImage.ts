@@ -2,7 +2,7 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import * as FileSystem from 'expo-file-system';
 import type { LocalPhoto } from '@/types/nc.types';
 
-const MAX_BYTES = 10 * 1024 * 1024;
+const MAX_BYTES = 2 * 1024 * 1024;
 
 export async function compressImage(uri: string): Promise<LocalPhoto> {
   const makeResult = (resultUri: string): LocalPhoto => ({

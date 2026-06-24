@@ -17,17 +17,17 @@ const MB = 1024 * 1024;
 describe('compressImage', () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('retorna uri original se tamanho <= 10MB', async () => {
-    mockGetInfo.mockResolvedValue({ size: 5 * MB });
+  it('retorna uri original se tamanho <= 2MB', async () => {
+    mockGetInfo.mockResolvedValue({ size: 1 * MB });
     const result = await compressImage('file:///original.jpg');
     expect(result.uri).toBe('file:///original.jpg');
     expect(mockManipulate).not.toHaveBeenCalled();
   });
 
-  it('tenta quality 0.6 se > 10MB e resultado cabe', async () => {
+  it('tenta quality 0.6 se > 2MB e resultado cabe', async () => {
     mockGetInfo
-      .mockResolvedValueOnce({ size: 15 * MB })
-      .mockResolvedValueOnce({ size: 8 * MB });
+      .mockResolvedValueOnce({ size: 4 * MB })
+      .mockResolvedValueOnce({ size: 1.5 * MB });
     mockManipulate.mockResolvedValue({ uri: 'file:///compressed.jpg', width: 4000, height: 3000 });
 
     const result = await compressImage('file:///big.jpg');
@@ -35,11 +35,11 @@ describe('compressImage', () => {
     expect(result.uri).toBe('file:///compressed.jpg');
   });
 
-  it('tenta quality 0.4 se quality 0.6 ainda > 10MB', async () => {
+  it('tenta quality 0.4 se quality 0.6 ainda > 2MB', async () => {
     mockGetInfo
-      .mockResolvedValueOnce({ size: 15 * MB })
-      .mockResolvedValueOnce({ size: 12 * MB })
-      .mockResolvedValueOnce({ size: 7 * MB });
+      .mockResolvedValueOnce({ size: 4 * MB })
+      .mockResolvedValueOnce({ size: 3 * MB })
+      .mockResolvedValueOnce({ size: 1.5 * MB });
     mockManipulate.mockResolvedValue({ uri: 'file:///c.jpg', width: 4000, height: 3000 });
 
     const result = await compressImage('file:///big.jpg');
@@ -48,11 +48,11 @@ describe('compressImage', () => {
     expect(result.uri).toBe('file:///c.jpg');
   });
 
-  it('redimensiona 50% se quality 0.4 ainda > 10MB', async () => {
+  it('redimensiona 50% se quality 0.4 ainda > 2MB', async () => {
     mockGetInfo
-      .mockResolvedValueOnce({ size: 15 * MB })
-      .mockResolvedValueOnce({ size: 12 * MB })
-      .mockResolvedValueOnce({ size: 11 * MB });
+      .mockResolvedValueOnce({ size: 4 * MB })
+      .mockResolvedValueOnce({ size: 3 * MB })
+      .mockResolvedValueOnce({ size: 2.5 * MB });
     mockManipulate
       .mockResolvedValueOnce({ uri: 'file:///c1.jpg', width: 4000, height: 3000 })
       .mockResolvedValueOnce({ uri: 'file:///c1.jpg', width: 4000, height: 3000 })
@@ -69,7 +69,7 @@ describe('compressImage', () => {
   });
 
   it('retorna mimeType image/jpeg e fileName photo.jpg', async () => {
-    mockGetInfo.mockResolvedValue({ size: 1 * MB });
+    mockGetInfo.mockResolvedValue({ size: 0.5 * MB });
     const result = await compressImage('file:///photo.jpg');
     expect(result.mimeType).toBe('image/jpeg');
     expect(result.fileName).toBe('photo.jpg');
