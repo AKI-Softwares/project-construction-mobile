@@ -35,7 +35,7 @@ export function RoomScreen({ visitId, roomId }: Props) {
 
   const pendingItems = visit?.rooms.find((r) => r.id === roomId)?.items.filter((i) => i.status === null) ?? [];
 
-  const handleMarkAllOk = useCallback(async () => {
+  const handleMarkAllOk = async () => {
     if (pendingItems.length === 0) return;
     setMarkingAll(true);
     try {
@@ -49,7 +49,7 @@ export function RoomScreen({ visitId, roomId }: Props) {
     } finally {
       setMarkingAll(false);
     }
-  }, [pendingItems, visitId, queryClient]);
+  };
 
   if (isLoading) return <Spinner fullScreen />;
 
