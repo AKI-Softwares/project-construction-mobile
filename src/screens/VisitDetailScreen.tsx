@@ -54,6 +54,7 @@ export function VisitDetailScreen({ id }: Props) {
   const [persistedSigned, setPersistedSigned] = useState(false);
 
   useEffect(() => {
+    setPersistedSigned(false);
     getSignedIds().then((ids) => {
       if (ids.includes(id)) setPersistedSigned(true);
     });
