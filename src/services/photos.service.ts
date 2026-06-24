@@ -11,9 +11,7 @@ export const photosService = {
       type: photo.mimeType ?? 'image/jpeg',
     } as unknown as Blob);
     return api
-      .post<Photo>(`/non-conformities/${nonConformityId}/photos`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
+      .post<Photo>(`/non-conformities/${nonConformityId}/photos`, formData)
       .then((r) => r.data);
   },
 
