@@ -1,12 +1,16 @@
 import { useState, useCallback } from 'react';
-import { ScrollView, View, Text, Pressable, StyleSheet } from 'react-native';
+import { ScrollView, View, Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
 import { Colors } from '@/theme/colors';
 import { Spinner } from '@/components/ui';
 import { ItemRow } from '@/components/visits/ItemRow';
 import { EvaluationSheet } from '@/components/visits/EvaluationSheet';
 import { useVisitDetail } from '@/hooks/useVisitDetail';
+import { visitsService } from '@/services/visits.service';
+import { QUERY_KEYS } from '@/lib/constants';
+import { showToast } from '@/lib/toast';
 import type { VisitItem } from '@/types/visit.types';
 
 interface Props {
@@ -24,6 +28,27 @@ export function RoomScreen({ visitId, roomId }: Props) {
     setSelectedItem(item);
   }, [refetch]);
   const handleSheetClose = useCallback(() => setSelectedItem(null), []);
+
+  const queryClient = useQueryClient();
+  const [markingAll, setMarkingAll] = useState(false);
+
+  const pendingItems = visit?.rooms.find((r) => r.id === roomId)?.items.filter((i) => i.status === null) ?? [];
+
+  const handleMarkAllOk = useCallback(async () => {
+    if (pendingItems.length === 0) return;
+    setMarkingAll(true);
+    try {
+      for (const item of pendingItems) {
+        await visitsService.evaluateItem(visitId, item.id, 'OK');
+      }
+      await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.VISIT_DETAIL(visitId) });
+      showToast('success', 'Todos os itens marcados como OK');
+    } catch {
+      showToast('error', 'Erro ao marcar itens');
+    } finally {
+      setMarkingAll(false);
+    }
+  }, [pendingItems, visitId, queryClient]);
 
   if (isLoading) return <Spinner fullScreen />;
 
@@ -96,9 +121,27 @@ export function RoomScreen({ visitId, roomId }: Props) {
             </Text>
           </View>
 
-          <Text style={{ color: Colors.t3, fontSize: 9, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 1.08, textTransform: 'uppercase', paddingHorizontal: 20, marginBottom: 8 }}>
-            ITENS
-          </Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, marginBottom: 8 }}>
+            <Text style={{ color: Colors.t3, fontSize: 9, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 1.08, textTransform: 'uppercase' }}>
+              ITENS
+            </Text>
+            {!isFinalized && pendingItems.length > 0 && (
+              <Pressable
+                onPress={handleMarkAllOk}
+                disabled={markingAll}
+                hitSlop={8}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 4, opacity: markingAll ? 0.5 : 1 }}
+              >
+                {markingAll ? (
+                  <ActivityIndicator size="small" color={Colors.ok} />
+                ) : (
+                  <Text style={{ color: Colors.ok, fontSize: 10, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 0.72 }}>
+                    ✓ TODOS OK
+                  </Text>
+                )}
+              </Pressable>
+            )}
+          </View>
 
           <View style={{ backgroundColor: Colors.bg2, borderRadius: 6, marginHorizontal: 20, overflow: 'hidden' }}>
             {room.items.map((item) => (
