@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, Alert, useWindowDimensions } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SignatureCanvas, { type SignatureViewRef } from 'react-native-signature-canvas';
 import { reportService } from '@/services/visits.service';
+import { showToast } from '@/lib/toast';
 
 type Props = {
   visitId: number;
@@ -28,7 +29,7 @@ export function SignatureSheet({ visitId, onSaved, onCancel }: Props) {
       .then((res) => {
         onSaved(res.signatureUrl ?? '');
       })
-      .catch(() => Alert.alert('Erro', 'Não foi possível salvar a assinatura.'))
+      .catch(() => showToast('error', 'Não foi possível salvar a assinatura'))
       .finally(() => setSaving(false));
   }
 
@@ -65,7 +66,7 @@ export function SignatureSheet({ visitId, onSaved, onCancel }: Props) {
         <SignatureCanvas
           ref={ref}
           onOK={handleOk}
-          onEmpty={() => Alert.alert('Atenção', 'Por favor, assine antes de confirmar.')}
+          onEmpty={() => showToast('info', 'Por favor, assine antes de confirmar')}
           descriptionText=""
           clearText="Limpar"
           confirmText="Confirmar"
