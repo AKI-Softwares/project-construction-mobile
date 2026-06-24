@@ -1,10 +1,10 @@
 import { useState, useCallback } from 'react';
 import { ScrollView, View, Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
 import { Colors } from '@/theme/colors';
-import { Spinner } from '@/components/ui';
+import { Spinner, Button } from '@/components/ui';
 import { ItemRow } from '@/components/visits/ItemRow';
 import { EvaluationSheet } from '@/components/visits/EvaluationSheet';
 import { useVisitDetail } from '@/hooks/useVisitDetail';
@@ -20,6 +20,7 @@ interface Props {
 
 export function RoomScreen({ visitId, roomId }: Props) {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { data: visit, isLoading, isError, refetch } = useVisitDetail(visitId);
   const [selectedItem, setSelectedItem] = useState<VisitItem | null>(null);
 
@@ -98,6 +99,11 @@ export function RoomScreen({ visitId, roomId }: Props) {
   const evaluated = room.items.filter((i) => i.status !== null).length;
   const total = room.items.length;
 
+  const isOngoing = visit.status === 'ONGOING';
+  const allEvaluated = room.items.length > 0 && room.items.every((i) => i.status !== null);
+  const roomIndex = visit.rooms.findIndex((r) => r.id === roomId);
+  const nextRoom = visit.rooms[roomIndex + 1] ?? null;
+
   return (
     <View style={styles.root}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -158,6 +164,28 @@ export function RoomScreen({ visitId, roomId }: Props) {
           </View>
         </ScrollView>
       </SafeAreaView>
+
+      {isOngoing && allEvaluated && (
+        <View style={{
+          paddingHorizontal: 20,
+          paddingTop: 12,
+          paddingBottom: Math.max(insets.bottom, 16),
+          borderTopWidth: 1,
+          borderTopColor: Colors.border,
+        }}>
+          <Button
+            label={nextRoom ? `PRÓXIMO CÔMODO → ${nextRoom.name}` : '← VOLTAR À VISTORIA'}
+            onPress={() => {
+              if (nextRoom) {
+                router.replace(`/(app)/visits/${visitId}/rooms/${nextRoom.id}` as any);
+              } else {
+                router.back();
+              }
+            }}
+            fullWidth
+          />
+        </View>
+      )}
 
       <EvaluationSheet
         item={selectedItem}
