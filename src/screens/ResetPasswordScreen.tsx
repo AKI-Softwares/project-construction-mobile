@@ -7,6 +7,8 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { z } from 'zod';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { AppHeader } from '@/components/ui/AppHeader';
+import { useTheme } from '@/hooks/useTheme';
 import { authService } from '@/services/auth.service';
 
 const schema = z.object({
@@ -16,6 +18,7 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export function ResetPasswordScreen() {
+  const { colors } = useTheme();
   const { token } = useLocalSearchParams<{ token?: string }>();
 
   const {
@@ -29,12 +32,12 @@ export function ResetPasswordScreen() {
 
   if (!token) {
     return (
-      <SafeAreaView className="flex-1 bg-bg1">
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 28 }}>
-          <Text style={{ color: '#EDF0F5', fontSize: 18, fontFamily: 'IBMPlexSans_600SemiBold', marginBottom: 8 }}>
+          <Text style={{ color: colors.t1, fontSize: 18, fontFamily: 'IBMPlexSans_600SemiBold', marginBottom: 8 }}>
             Link inválido
           </Text>
-          <Text style={{ color: '#7D8FA3', fontSize: 13, fontFamily: 'IBMPlexSans_400Regular', textAlign: 'center', marginBottom: 24 }}>
+          <Text style={{ color: colors.t2, fontSize: 13, fontFamily: 'IBMPlexSans_400Regular', textAlign: 'center', marginBottom: 24 }}>
             Este link de redefinição não é válido. Solicite um novo pelo app.
           </Text>
           <Button label="Ir para o login" onPress={() => router.replace('/(auth)/login')} />
@@ -62,19 +65,20 @@ export function ResetPasswordScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-bg1">
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
+      <AppHeader title="Nova senha" />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"
       >
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
           <View className="flex-1 justify-center px-7">
-            <View className="mb-10">
+            <View style={{ marginBottom: 40 }}>
               <Text
                 style={{
                   fontSize: 24,
                   fontFamily: 'IBMPlexSans_700Bold',
-                  color: '#EDF0F5',
+                  color: colors.t1,
                   letterSpacing: -0.5,
                   marginBottom: 8,
                 }}
@@ -85,7 +89,7 @@ export function ResetPasswordScreen() {
                 style={{
                   fontSize: 13,
                   fontFamily: 'IBMPlexSans_400Regular',
-                  color: '#7D8FA3',
+                  color: colors.t2,
                   lineHeight: 18,
                 }}
               >
@@ -93,7 +97,7 @@ export function ResetPasswordScreen() {
               </Text>
             </View>
 
-            <View className="gap-4">
+            <View style={{ gap: 16 }}>
               <Controller
                 control={control}
                 name="newPassword"
@@ -110,7 +114,7 @@ export function ResetPasswordScreen() {
                 )}
               />
 
-              <View className="mt-2">
+              <View style={{ marginTop: 8 }}>
                 <Button
                   label={isSubmitting ? 'Salvando...' : 'Salvar nova senha'}
                   onPress={handleSubmit(onSubmit)}

@@ -7,6 +7,8 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { z } from 'zod';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { AppHeader } from '@/components/ui/AppHeader';
+import { useTheme } from '@/hooks/useTheme';
 import { authService } from '@/services/auth.service';
 import { useAuthStore } from '@/store/auth.store';
 import { showToast } from '@/lib/toast';
@@ -19,6 +21,7 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export function ChangePasswordScreen() {
+  const { colors } = useTheme();
   const clearMustChangePassword = useAuthStore((s) => s.clearMustChangePassword);
   const { from } = useLocalSearchParams<{ from?: string }>();
   const isVoluntary = from === 'profile';
@@ -53,7 +56,8 @@ export function ChangePasswordScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-bg1">
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
+      <AppHeader title="Alterar senha" />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"
@@ -63,12 +67,12 @@ export function ChangePasswordScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <View className="flex-1 justify-center px-7">
-            <View className="mb-10">
+            <View style={{ marginBottom: 40 }}>
               <Text
                 style={{
                   fontSize: 24,
                   fontFamily: 'IBMPlexSans_700Bold',
-                  color: '#EDF0F5',
+                  color: colors.t1,
                   letterSpacing: -0.5,
                   marginBottom: 8,
                 }}
@@ -79,7 +83,7 @@ export function ChangePasswordScreen() {
                 style={{
                   fontSize: 13,
                   fontFamily: 'IBMPlexSans_400Regular',
-                  color: '#7D8FA3',
+                  color: colors.t2,
                   lineHeight: 18,
                 }}
               >
@@ -89,7 +93,7 @@ export function ChangePasswordScreen() {
               </Text>
             </View>
 
-            <View className="gap-4">
+            <View style={{ gap: 16 }}>
               <Controller
                 control={control}
                 name="currentPassword"
@@ -122,7 +126,7 @@ export function ChangePasswordScreen() {
                 )}
               />
 
-              <View className="mt-2">
+              <View style={{ marginTop: 8 }}>
                 <Button
                   label={isSubmitting ? 'Salvando...' : 'Salvar nova senha'}
                   onPress={handleSubmit(onSubmit)}
