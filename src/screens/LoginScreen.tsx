@@ -5,11 +5,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios';
 import { router } from 'expo-router';
 import { z } from 'zod';
+import { Ionicons } from '@expo/vector-icons';
 import { decodeJwtPayload } from '@/lib/jwt';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { authService } from '@/services/auth.service';
 import { useAuthStore } from '@/store/auth.store';
+import { useTheme } from '@/hooks/useTheme';
+import { NavColors } from '@/theme/colors';
 
 const schema = z.object({
   email: z.string().email('E-mail inválido'),
@@ -19,6 +22,7 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export function LoginScreen() {
+  const { colors } = useTheme();
   const login = useAuthStore((s) => s.login);
 
   const {
@@ -56,65 +60,36 @@ export function LoginScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-bg1">
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1"
+        style={{ flex: 1 }}
       >
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Ornamento superior direito */}
-          <View className="absolute right-6 top-12 opacity-20">
-            {[48, 36, 24, 12].map((size) => (
-              <View
-                key={size}
-                style={{
-                  width: size,
-                  height: size,
-                  borderRadius: size / 2,
-                  borderWidth: 1,
-                  borderColor: '#344456',
-                  position: 'absolute',
-                  top: (48 - size) / 2,
-                  left: (48 - size) / 2,
-                }}
-              />
-            ))}
-          </View>
-
           {/* Conteúdo central */}
-          <View className="flex-1 justify-center px-7">
-            {/* Wordmark */}
-            <View className="mb-10">
-              <View className="mb-3 flex-row items-center gap-1.5">
-                <View
-                  className="bg-amber"
-                  style={{ width: 7, height: 7, borderRadius: 2, transform: [{ rotate: '45deg' }] }}
-                />
-                <Text className="font-mono text-[9px] text-t3 uppercase tracking-[0.14em]">
-                  Sistema de Vistoria Técnica
-                </Text>
+          <View style={{ flex: 1, justifyContent: 'center', paddingHorizontal: 28 }}>
+            {/* Logo CHECKOBRA */}
+            <View style={{ alignItems: 'center', marginBottom: 36 }}>
+              <View style={{ position: 'relative', width: 80, height: 80, marginBottom: 12 }}>
+                <Ionicons name="search" size={80} color={colors.teal} />
+                <View style={{ position: 'absolute', top: 14, left: 16 }}>
+                  <Ionicons name="bar-chart" size={36} color={NavColors.navBg} />
+                </View>
               </View>
-
-              <View className="flex-row">
-                <Text style={{ fontSize: 38, fontFamily: 'IBMPlexSans_700Bold', color: '#EDF0F5', letterSpacing: -1.5, lineHeight: 42 }}>
-                  Check
-                </Text>
-                <Text style={{ fontSize: 38, fontFamily: 'IBMPlexSans_700Bold', color: '#E8920C', letterSpacing: -1.5, lineHeight: 42 }}>
-                  Obra
-                </Text>
+              <View style={{ flexDirection: 'row' }}>
+                <Text style={{ fontSize: 28, fontFamily: 'IBMPlexSans_700Bold', color: colors.teal }}>CHECK</Text>
+                <Text style={{ fontSize: 28, fontFamily: 'IBMPlexSans_700Bold', color: colors.t1 }}>OBRA</Text>
               </View>
-
-              <View className="mt-3 flex-row items-center gap-1.5">
-                <View className="bg-amber h-0.5 w-9 rounded" />
-                <View className="bg-t3 h-0.5 w-2.5 rounded opacity-50" />
-              </View>
+              <Text style={{ color: colors.t2, fontSize: 12, fontFamily: 'IBMPlexSans_400Regular', marginTop: 4, letterSpacing: 2 }}>
+                INSPETOR
+              </Text>
             </View>
 
             {/* Formulário */}
-            <View className="gap-4">
+            <View style={{ gap: 16 }}>
               <Controller
                 control={control}
                 name="email"
@@ -132,7 +107,6 @@ export function LoginScreen() {
                   />
                 )}
               />
-
               <Controller
                 control={control}
                 name="password"
@@ -148,8 +122,7 @@ export function LoginScreen() {
                   />
                 )}
               />
-
-              <View className="mt-2">
+              <View style={{ marginTop: 8 }}>
                 <Button
                   label={isSubmitting ? 'Autenticando...' : 'Entrar'}
                   onPress={handleSubmit(onSubmit)}
@@ -157,22 +130,22 @@ export function LoginScreen() {
                   fullWidth
                 />
               </View>
-
               <Pressable
-                className="mt-4 items-center"
+                style={{ marginTop: 8, alignItems: 'center' }}
                 onPress={() => router.push('/(auth)/forgot-password')}
               >
-                <Text className="border-b border-border pb-0.5 text-xs text-t2">
-                  Esqueci minha senha
+                <Text style={{ color: colors.teal, fontSize: 13, fontFamily: 'IBMPlexSans_400Regular' }}>
+                  Esqueceu a senha?
                 </Text>
               </Pressable>
             </View>
           </View>
 
           {/* Rodapé */}
-          <View className="flex-row justify-between px-7 pb-8">
-            <Text className="font-mono text-[9px] text-t3 tracking-[0.06em]">v1.0.0</Text>
-            <Text className="font-mono text-[9px] text-t3 tracking-[0.04em]">AKI Softwares</Text>
+          <View style={{ alignItems: 'center', paddingBottom: 24 }}>
+            <Text style={{ color: colors.t3, fontSize: 11, fontFamily: 'IBMPlexSans_400Regular' }}>
+              AKI Softwares
+            </Text>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
