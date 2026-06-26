@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { View, Text, Pressable, Image, Alert, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { Colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { compressImage } from '@/lib/compressImage';
 import type { LocalPhoto } from '@/types/nc.types';
 import type { Photo } from '@/types/visit.types';
@@ -26,6 +26,7 @@ export function PhotoGrid({
   onRemoveExisting,
   disabled = false,
 }: Props) {
+  const { colors } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const total = local.length + existing.length;
   const canAdd = !disabled && total < MAX_PHOTOS;
@@ -90,7 +91,7 @@ export function PhotoGrid({
                 position: 'absolute',
                 top: -6,
                 right: -6,
-                backgroundColor: Colors.nc,
+                backgroundColor: '#EF4444',
                 borderRadius: 8,
                 width: 16,
                 height: 16,
@@ -120,7 +121,7 @@ export function PhotoGrid({
                 position: 'absolute',
                 top: -6,
                 right: -6,
-                backgroundColor: Colors.nc,
+                backgroundColor: '#EF4444',
                 borderRadius: 8,
                 width: 16,
                 height: 16,
@@ -145,19 +146,19 @@ export function PhotoGrid({
             height: THUMB,
             borderRadius: 4,
             borderWidth: 1,
-            borderColor: Colors.border,
+            borderColor: colors.border,
             borderStyle: 'dashed',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: Colors.bg3,
+            backgroundColor: colors.inputBg,
           }}
         >
           {isLoading ? (
-            <ActivityIndicator size="small" color={Colors.amber} />
+            <ActivityIndicator size="small" color={colors.teal} />
           ) : (
             <Text
               style={{
-                color: Colors.amber,
+                color: colors.teal,
                 fontSize: 22,
                 fontFamily: 'IBMPlexSans_400Regular',
                 lineHeight: 26,

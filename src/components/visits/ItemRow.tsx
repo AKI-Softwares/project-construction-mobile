@@ -1,6 +1,8 @@
 import { memo } from 'react';
 import { Pressable, View, Text } from 'react-native';
-import { Colors } from '@/theme/colors';
+import { Ionicons } from '@expo/vector-icons';
+import { ItemStatusConfig } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import type { VisitItem } from '@/types/visit.types';
 
 interface Props {
@@ -9,20 +11,9 @@ interface Props {
 }
 
 export const ItemRow = memo(function ItemRow({ item, onPress }: Props) {
-  const dotColor =
-    item.status === 'OK' ? Colors.ok :
-    item.status === 'NOK' ? Colors.nc :
-    Colors.pend;
-
-  const badgeColor =
-    item.status === 'OK' ? Colors.ok :
-    item.status === 'NOK' ? Colors.nc :
-    Colors.t2;
-
-  const badgeLabel =
-    item.status === 'OK' ? '✓ OK' :
-    item.status === 'NOK' ? '✕ NOK' :
-    'PENDENTE';
+  const { colors } = useTheme();
+  const key = item.status === 'OK' ? 'OK' : item.status === 'NOK' ? 'NOK' : 'NA';
+  const cfg = ItemStatusConfig[key];
 
   return (
     <Pressable
@@ -31,43 +22,24 @@ export const ItemRow = memo(function ItemRow({ item, onPress }: Props) {
       style={({ pressed }) => ({
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 20,
-        paddingVertical: 16,
-        backgroundColor: pressed && onPress ? Colors.bg3 : Colors.bg2,
+        paddingHorizontal: 16,
+        paddingVertical: 15,
+        backgroundColor: pressed && onPress ? colors.surfacePressed : 'transparent',
         borderBottomWidth: 1,
-        borderBottomColor: Colors.border,
-        opacity: onPress ? 1 : 0.45,
+        borderBottomColor: colors.border,
+        gap: 12,
+        opacity: onPress ? 1 : 0.5,
       })}
     >
-      <View
-        style={{
-          width: 8,
-          height: 8,
-          borderRadius: 4,
-          backgroundColor: dotColor,
-          marginRight: 12,
-        }}
-      />
+      <Ionicons name={cfg.icon} size={20} color={cfg.color} />
       <Text
-        style={{
-          flex: 1,
-          color: Colors.t1,
-          fontSize: 15,
-          fontFamily: 'IBMPlexSans_400Regular',
-        }}
+        style={{ flex: 1, color: colors.t1, fontSize: 15, fontFamily: 'IBMPlexSans_400Regular' }}
         numberOfLines={2}
       >
         {item.serviceName}
       </Text>
-      <Text
-        style={{
-          color: badgeColor,
-          fontSize: 13,
-          fontFamily: 'IBMPlexMono_400Regular',
-          marginLeft: 12,
-        }}
-      >
-        {badgeLabel}
+      <Text style={{ color: cfg.color, fontSize: 13, fontFamily: 'IBMPlexSans_600SemiBold' }}>
+        {cfg.label}
       </Text>
     </Pressable>
   );
