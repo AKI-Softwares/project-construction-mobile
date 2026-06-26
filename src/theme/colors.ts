@@ -1,51 +1,103 @@
-export const Colors = {
-  // Backgrounds
-  bg1: '#0F1520',
-  bg2: '#162030',
-  bg3: '#1E2C40',
-  bg4: '#263348',
+export interface ThemeColors {
+  bg: string;
+  bgAlt: string;
+  surface: string;
+  surfacePressed: string;
+  teal: string;
+  tealDark: string;
+  tealDim: string;
+  ok: string;
+  okDim: string;
+  nok: string;
+  nokDim: string;
+  nc: string;
+  ncDim: string;
+  waiting: string;
+  waitingDim: string;
+  progressFill: string;
+  progressTrack: string;
+  t1: string;
+  t2: string;
+  t3: string;
+  inputBg: string;
+  border: string;
+  borderOk: string;
+  borderNok: string;
+}
 
-  // Accent
-  amber: '#E8920C',
-  amberL: '#F5A623',
-  amberDim: 'rgba(232,146,12,0.12)',
-
-  // Status
-  ok: '#22C55E',
-  okDim: 'rgba(34,197,94,0.10)',
-  nc: '#EF4444',
-  ncDim: 'rgba(239,68,68,0.10)',
-  prog: '#EAB308',
-  progDim: 'rgba(234,179,8,0.10)',
-  pend: '#475569',
-  pendDim: 'rgba(71,85,105,0.15)',
-
-  // Texto
-  t1: '#EDF0F5',
-  t2: '#7D8FA3',
-  t3: '#344456',
-
-  // Border
-  border: '#263348',
-  borderM: 'rgba(38,51,72,0.6)',
+export const NavColors = {
+  navBg:  '#1B2A46',
+  tabBg:  '#162030',
+  teal:   '#22C4CC',
+  tNav:   '#EDF0F5',
 } as const;
 
-export type ColorKey = keyof typeof Colors;
+export const LightColors: ThemeColors = {
+  bg:             '#FFFFFF',
+  bgAlt:          '#F5F6F8',
+  surface:        '#FFFFFF',
+  surfacePressed: '#F0F4F8',
+  teal:           '#22C4CC',
+  tealDark:       '#1BA8B0',
+  tealDim:        'rgba(34,196,204,0.12)',
+  ok:             '#22C4CC',
+  okDim:          'rgba(34,196,204,0.12)',
+  nok:            '#F57C00',
+  nokDim:         'rgba(245,124,0,0.12)',
+  nc:             '#EF4444',
+  ncDim:          'rgba(239,68,68,0.10)',
+  waiting:        '#8A9BAD',
+  waitingDim:     'rgba(138,155,173,0.15)',
+  progressFill:   '#F5A623',
+  progressTrack:  '#CBD5E0',
+  t1:             '#1A2B45',
+  t2:             '#6B7F94',
+  t3:             '#9AAAB8',
+  inputBg:        '#EAECF0',
+  border:         '#E2E8F0',
+  borderOk:       '#22C4CC',
+  borderNok:      '#EF4444',
+};
 
-export const StatusColors = {
-  NOT_STARTED: Colors.pend,
-  ONGOING: Colors.prog,
-  FINALIZED: Colors.ok,
-} as const;
+export const DarkColors: ThemeColors = {
+  bg:             '#0F1520',
+  bgAlt:          '#162030',
+  surface:        '#162030',
+  surfacePressed: '#1E2C40',
+  teal:           '#22C4CC',
+  tealDark:       '#1BA8B0',
+  tealDim:        'rgba(34,196,204,0.12)',
+  ok:             '#22C4CC',
+  okDim:          'rgba(34,196,204,0.12)',
+  nok:            '#F57C00',
+  nokDim:         'rgba(245,124,0,0.12)',
+  nc:             '#EF4444',
+  ncDim:          'rgba(239,68,68,0.10)',
+  waiting:        '#8A9BAD',
+  waitingDim:     'rgba(138,155,173,0.15)',
+  progressFill:   '#F5A623',
+  progressTrack:  '#344456',
+  t1:             '#EDF0F5',
+  t2:             '#7D8FA3',
+  t3:             '#344456',
+  inputBg:        '#263348',
+  border:         '#263348',
+  borderOk:       '#22C4CC',
+  borderNok:      '#EF4444',
+};
 
 export const VisitStatusConfig = {
-  NOT_STARTED: { label: 'Pendente',      color: Colors.pend, dim: Colors.pendDim, sym: '○' },
-  ONGOING:     { label: 'Em vistoria',   color: Colors.prog, dim: Colors.progDim, sym: '◎' },
-  FINALIZED:   { label: 'Finalizado',    color: Colors.ok,   dim: Colors.okDim,   sym: '✓' },
+  NOT_STARTED: { label: 'Aguardando',   color: '#8A9BAD', dim: 'rgba(138,155,173,0.15)', icon: 'time-outline'           as const },
+  ONGOING:     { label: 'Em vistoria',  color: '#22C4CC', dim: 'rgba(34,196,204,0.12)',  icon: 'checkmark-circle-outline' as const },
+  FINALIZED:   { label: 'Finalizado',   color: '#22C4CC', dim: 'rgba(34,196,204,0.12)',  icon: 'checkmark-circle'         as const },
 } as const;
 
 export const ItemStatusConfig = {
-  OK:  { label: 'Conforme',      color: Colors.ok,   dim: Colors.okDim,   sym: '✓' },
-  NOK: { label: 'Não conforme',  color: Colors.nc,   dim: Colors.ncDim,   sym: '✕' },
-  NA:  { label: 'N/A',           color: Colors.pend, dim: Colors.pendDim, sym: '—' },
+  OK:  { label: 'OK',     color: '#22C4CC', dim: 'rgba(34,196,204,0.12)',  icon: 'checkmark-circle' as const },
+  NOK: { label: 'NOK',   color: '#F57C00', dim: 'rgba(245,124,0,0.12)',   icon: 'alert-circle'     as const },
+  NA:  { label: 'Avaliar', color: '#8A9BAD', dim: 'rgba(138,155,173,0.15)', icon: 'time-outline'    as const },
 } as const;
+
+// Legacy export para compatibilidade com qualquer import restante
+export const Colors = DarkColors;
+export type ColorKey = keyof ThemeColors;
