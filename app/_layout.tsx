@@ -19,6 +19,8 @@ import { Slot, SplashScreen } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { colorScheme } from 'react-native-css-interop';
+import { useThemeStore } from '@/store/theme.store';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -45,17 +47,20 @@ export default function RootLayout() {
 
   const fontError = sansError ?? monoError;
   const loaded = sansLoaded && monoLoaded;
+  const isDark = useThemeStore((s) => s.isDark);
 
   useEffect(() => {
     if (loaded || fontError) SplashScreen.hideAsync().catch(() => {});
   }, [loaded, fontError]);
+
+  colorScheme.set(isDark ? 'dark' : 'light');
 
   if (!loaded && !fontError) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
-        <StatusBar style="light" />
+        <StatusBar style={isDark ? 'light' : 'dark'} />
         <Slot />
       </QueryClientProvider>
     </GestureHandlerRootView>
