@@ -53,7 +53,9 @@ export default function RootLayout() {
     if (loaded || fontError) SplashScreen.hideAsync().catch(() => {});
   }, [loaded, fontError]);
 
-  colorScheme.set(isDark ? 'dark' : 'light');
+  useEffect(() => {
+    colorScheme.set(isDark ? 'dark' : 'light');
+  }, [isDark]);
 
   if (!loaded && !fontError) return null;
 
