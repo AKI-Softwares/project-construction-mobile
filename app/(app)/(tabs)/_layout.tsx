@@ -1,13 +1,18 @@
+import React from 'react';
 import { Tabs } from 'expo-router';
-import { Text } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '@/theme';
+import { NavColors } from '@/theme/colors';
 
-function TabIcon({ label, active }: { label: string; active: boolean }) {
+type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
+
+function TabIcon({ name, focused }: { name: IoniconName; focused: boolean }) {
   return (
-    <Text style={{ fontSize: 18, color: active ? Colors.amber : Colors.t3 }}>
-      {label}
-    </Text>
+    <Ionicons
+      name={focused ? name : `${name}-outline` as IoniconName}
+      size={22}
+      color={focused ? NavColors.teal : NavColors.tNav + '88'}
+    />
   );
 }
 
@@ -19,20 +24,18 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: Colors.bg1,
-          borderTopColor: Colors.border,
+          backgroundColor: NavColors.tabBg,
+          borderTopColor: NavColors.navBg,
           borderTopWidth: 1,
-          paddingTop: 10,
+          paddingTop: 8,
           paddingBottom: insets.bottom + 8,
           height: 56 + insets.bottom,
         },
-        tabBarActiveTintColor: Colors.amber,
-        tabBarInactiveTintColor: Colors.t3,
+        tabBarActiveTintColor:   NavColors.teal,
+        tabBarInactiveTintColor: NavColors.tNav + '66',
         tabBarLabelStyle: {
-          fontSize: 9,
+          fontSize: 10,
           fontFamily: 'IBMPlexSans_400Regular',
-          letterSpacing: 0.4,
-          textTransform: 'uppercase',
           marginTop: 2,
         },
       }}
@@ -41,14 +44,14 @@ export default function TabsLayout() {
         name="visits"
         options={{
           title: 'Visitas',
-          tabBarIcon: ({ focused }) => <TabIcon label="◫" active={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="clipboard" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Perfil',
-          tabBarIcon: ({ focused }) => <TabIcon label="◉" active={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="person" focused={focused} />,
         }}
       />
     </Tabs>
