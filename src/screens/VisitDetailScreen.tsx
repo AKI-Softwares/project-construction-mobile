@@ -6,7 +6,8 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import * as SecureStore from 'expo-secure-store';
 import { useQueryClient } from '@tanstack/react-query';
-import { Colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
+import { AppHeader } from '@/components/ui/AppHeader';
 import { Spinner, Button, ProgressBar } from '@/components/ui';
 import { VisitHeader } from '@/components/visits/VisitHeader';
 import { RoomCard } from '@/components/visits/RoomCard';
@@ -44,6 +45,7 @@ interface Props {
 export function VisitDetailScreen({ id }: Props) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
   const { data: visit, isLoading, isError, refetch } = useVisitDetail(id);
   const { mutate: startVisit, isPending: isStartPending } = useStartVisit(id);
   const { mutate: finalizeVisit, isPending: isFinalizePending } = useFinalizeVisit(id);
@@ -99,16 +101,16 @@ export function VisitDetailScreen({ id }: Props) {
 
   if (isError || !visit) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: Colors.bg1 }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16 }}>
-          <Text style={{ color: Colors.t2, fontSize: 13, fontFamily: 'IBMPlexSans_400Regular' }}>
+          <Text style={{ color: colors.t2, fontSize: 13, fontFamily: 'IBMPlexSans_400Regular' }}>
             Erro ao carregar vistoria
           </Text>
           <Pressable
             onPress={() => refetch()}
-            style={{ borderWidth: 1, borderColor: Colors.border, borderRadius: 6, paddingHorizontal: 16, paddingVertical: 10 }}
+            style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 6, paddingHorizontal: 16, paddingVertical: 10 }}
           >
-            <Text style={{ color: Colors.t1, fontSize: 11, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 0.88, textTransform: 'uppercase' }}>
+            <Text style={{ color: colors.t1, fontSize: 11, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 0.88, textTransform: 'uppercase' }}>
               TENTAR NOVAMENTE
             </Text>
           </Pressable>
@@ -141,16 +143,8 @@ export function VisitDetailScreen({ id }: Props) {
         onCancel={() => setShowSignature(false)}
       />
     </Modal>
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.bg1 }} edges={['top']}>
-      <Pressable
-        onPress={() => router.back()}
-        style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: 4 }}
-        hitSlop={8}
-      >
-        <Text style={{ color: Colors.amber, fontSize: 13, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 0.6 }}>
-          ← VOLTAR
-        </Text>
-      </Pressable>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top']}>
+      <AppHeader title={`Apt. ${visit.apartment.identifier}`} />
 
       <ScrollView
         contentContainerStyle={{ paddingBottom: showBottomBar ? 0 : 24 }}
@@ -159,11 +153,16 @@ export function VisitDetailScreen({ id }: Props) {
         <VisitHeader visit={visit} />
 
         {isReinspection && (
-          <View style={{ marginHorizontal: 20, marginBottom: 12, flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: Colors.amberDim, borderRadius: 6, paddingHorizontal: 12, paddingVertical: 10 }}>
-            <Text style={{ color: Colors.amber, fontSize: 11, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 0.72 }}>
+          <View style={{
+            marginHorizontal: 20, marginBottom: 12,
+            flexDirection: 'row', alignItems: 'center', gap: 8,
+            backgroundColor: colors.tealDim,
+            borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10,
+          }}>
+            <Text style={{ color: colors.teal, fontSize: 11, fontFamily: 'IBMPlexMono_600SemiBold' }}>
               ◆ RE-INSPEÇÃO
             </Text>
-            <Text style={{ color: Colors.t2, fontSize: 11, fontFamily: 'IBMPlexSans_400Regular', flex: 1 }}>
+            <Text style={{ color: colors.t2, fontSize: 11, fontFamily: 'IBMPlexSans_400Regular', flex: 1 }}>
               {isAvailable ? 'Disponível para assumir' : `Itens com NC da vistoria anterior`}
             </Text>
           </View>
@@ -171,14 +170,14 @@ export function VisitDetailScreen({ id }: Props) {
 
         {(isOngoing || isFinalized) && (
           <View style={{ paddingHorizontal: 20, marginBottom: 20 }}>
-            <Text style={{ color: Colors.t2, fontSize: 12, fontFamily: 'IBMPlexMono_400Regular', marginBottom: 8 }}>
+            <Text style={{ color: colors.t2, fontSize: 12, fontFamily: 'IBMPlexMono_400Regular', marginBottom: 8 }}>
               {completed} de {total} ambientes concluídos
             </Text>
             <ProgressBar value={total > 0 ? completed / total : 0} />
           </View>
         )}
 
-        <Text style={{ color: Colors.t3, fontSize: 9, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 1.08, textTransform: 'uppercase', paddingHorizontal: 20, marginBottom: 8 }}>
+        <Text style={{ color: colors.t3, fontSize: 9, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 1.08, textTransform: 'uppercase', paddingHorizontal: 20, marginBottom: 8 }}>
           AMBIENTES
         </Text>
 
@@ -194,7 +193,7 @@ export function VisitDetailScreen({ id }: Props) {
       </ScrollView>
 
       {isAvailable && (
-        <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: Math.max(insets.bottom, 16), borderTopWidth: 1, borderTopColor: Colors.border }}>
+        <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: Math.max(insets.bottom, 16), borderTopWidth: 1, borderTopColor: colors.border }}>
           <Button
             label="ASSUMIR RE-INSPEÇÃO"
             onPress={handleClaim}
@@ -205,7 +204,7 @@ export function VisitDetailScreen({ id }: Props) {
       )}
 
       {!isAvailable && isNotStarted && (
-        <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: Math.max(insets.bottom, 16), borderTopWidth: 1, borderTopColor: Colors.border }}>
+        <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: Math.max(insets.bottom, 16), borderTopWidth: 1, borderTopColor: colors.border }}>
           <Button
             label={isReinspection ? 'INICIAR RE-INSPEÇÃO' : 'INICIAR VISTORIA'}
             onPress={handleStart}
@@ -216,7 +215,7 @@ export function VisitDetailScreen({ id }: Props) {
       )}
 
       {isOngoing && (
-        <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: Math.max(insets.bottom, 16), borderTopWidth: 1, borderTopColor: Colors.border }}>
+        <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: Math.max(insets.bottom, 16), borderTopWidth: 1, borderTopColor: colors.border }}>
           <Button
             label={isReinspection ? 'FINALIZAR RE-INSPEÇÃO' : 'FINALIZAR VISTORIA'}
             onPress={handleFinalize}
@@ -228,19 +227,23 @@ export function VisitDetailScreen({ id }: Props) {
       )}
 
       {isFinalized && (
-        <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: Math.max(insets.bottom, 16), borderTopWidth: 1, borderTopColor: Colors.border, gap: 10 }}>
+        <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: Math.max(insets.bottom, 16), borderTopWidth: 1, borderTopColor: colors.border, gap: 10 }}>
           {!(persistedSigned || visit.signatureUrl) ? (
             <Button label="ASSINAR VISTORIA" onPress={() => setShowSignature(true)} fullWidth />
           ) : (
             <Pressable
               onPress={handleDownloadReport}
               disabled={isDownloading}
-              style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: Colors.border, borderRadius: 8, paddingVertical: 14, gap: 8, opacity: isDownloading ? 0.5 : 1 }}
+              style={{
+                flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+                borderWidth: 1, borderColor: colors.border, borderRadius: 50,
+                paddingVertical: 14, gap: 8, opacity: isDownloading ? 0.5 : 1,
+              }}
             >
               {isDownloading
-                ? <ActivityIndicator size="small" color={Colors.t2} />
-                : <Text style={{ color: Colors.t1, fontSize: 11, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 0.88, textTransform: 'uppercase' }}>
-                    ✓ BAIXAR RELATÓRIO ASSINADO
+                ? <ActivityIndicator size="small" color={colors.t2} />
+                : <Text style={{ color: colors.t1, fontSize: 13, fontFamily: 'IBMPlexSans_600SemiBold' }}>
+                    ✓ Baixar relatório assinado
                   </Text>
               }
             </Pressable>
