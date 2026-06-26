@@ -1,4 +1,5 @@
 import { ActivityIndicator, View } from 'react-native';
+import { useTheme } from '@/hooks/useTheme';
 
 interface SpinnerProps {
   size?: 'small' | 'large';
@@ -6,12 +7,14 @@ interface SpinnerProps {
 }
 
 export function Spinner({ size = 'large', fullScreen = false }: SpinnerProps) {
+  const { colors } = useTheme();
+
   if (fullScreen) {
     return (
-      <View className="flex-1 items-center justify-center bg-bg1">
-        <ActivityIndicator size={size} color="#E8920C" />
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bg }}>
+        <ActivityIndicator size={size} color={colors.teal} />
       </View>
     );
   }
-  return <ActivityIndicator size={size} color="#E8920C" />;
+  return <ActivityIndicator size={size} color={colors.teal} />;
 }

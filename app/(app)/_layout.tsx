@@ -1,16 +1,18 @@
 import { Redirect, Stack } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import { Spinner } from '@/components/ui/Spinner';
-import { toastConfig } from '@/components/ui/Toast';
+import { buildToastConfig } from '@/components/ui/Toast';
 import { useAuthStore } from '@/store/auth.store';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
+import { useTheme } from '@/hooks/useTheme';
 
 function AppLayoutInner() {
+  const { colors } = useTheme();
   usePushNotifications();
   return (
     <>
       <Stack screenOptions={{ headerShown: false }} />
-      <Toast config={toastConfig} topOffset={60} />
+      <Toast config={buildToastConfig(colors)} topOffset={60} />
     </>
   );
 }
