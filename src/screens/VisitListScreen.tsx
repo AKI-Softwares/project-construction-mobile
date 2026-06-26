@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react';
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
+import { NavColors } from '@/theme/colors';
 import { Spinner } from '@/components/ui';
 import { VisitCard } from '@/components/visits';
 import { useMyVisits } from '@/hooks/useMyVisits';
@@ -36,6 +37,7 @@ function getEmptyMessage(filter: FilterKey): string {
 
 export function VisitListScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const user = useAuthStore((s) => s.user);
   const [activeFilter, setActiveFilter] = useState<FilterKey>('all');
   const { data: visits = [], isLoading, isError, isFetching, refetch } = useMyVisits();
@@ -57,84 +59,53 @@ export function VisitListScreen() {
   if (isLoading || (showingFinalized && isLoadingFinalized)) return <Spinner fullScreen />;
 
   return (
-    <SafeAreaView className="flex-1 bg-bg1">
-      {/* Header */}
-      <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: 14 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
+      {/* Header — dark navy fixo */}
+      <View style={{ backgroundColor: NavColors.navBg, paddingHorizontal: 20, paddingTop: 14, paddingBottom: 16 }}>
         <View style={{ flexDirection: 'row' }}>
-          <Text
-            style={{ color: Colors.t1, fontSize: 26, fontFamily: 'IBMPlexSans_700Bold' }}
-          >
-            Check
-          </Text>
-          <Text
-            style={{ color: Colors.amber, fontSize: 26, fontFamily: 'IBMPlexSans_700Bold' }}
-          >
-            Obra
-          </Text>
+          <Text style={{ color: NavColors.teal, fontSize: 24, fontFamily: 'IBMPlexSans_700Bold' }}>Check</Text>
+          <Text style={{ color: NavColors.tNav, fontSize: 24, fontFamily: 'IBMPlexSans_700Bold' }}>Obra</Text>
         </View>
-        <Text
-          style={{
-            color: Colors.t3,
-            fontSize: 10,
-            fontFamily: 'IBMPlexMono_400Regular',
-            letterSpacing: 1.08,
-            textTransform: 'uppercase',
-            marginTop: 2,
-          }}
-        >
-          ◆ VISTORIA TÉCNICA
+        <Text style={{ color: NavColors.teal, fontSize: 13, fontFamily: 'IBMPlexSans_400Regular', marginTop: 2 }}>
+          Vistoria técnica{user ? ` — Olá, ${user.name.split(' ')[0]}!` : ''}
         </Text>
-        {user && (
-          <Text
-            style={{
-              color: Colors.t2,
-              fontSize: 14,
-              fontFamily: 'IBMPlexSans_400Regular',
-              marginTop: 10,
-            }}
-          >
-            {getGreeting()}, {user.name}
-          </Text>
-        )}
       </View>
 
       {/* Filter chips */}
-      <View style={{ flexDirection: 'row', marginBottom: 14 }}>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ gap: 8, paddingHorizontal: 20 }}
-      >
-        {FILTERS.map((f) => {
-          const active = activeFilter === f.key;
-          return (
-            <Pressable
-              key={f.key}
-              onPress={() => setActiveFilter(f.key)}
-              style={{
-                paddingHorizontal: 12,
-                paddingVertical: 7,
-                borderRadius: 4,
-                borderWidth: 1,
-                borderColor: active ? Colors.amber : Colors.border,
-                backgroundColor: active ? Colors.amber : 'transparent',
-              }}
-            >
-              <Text
+      <View style={{ flexDirection: 'row', marginBottom: 12, marginTop: 8 }}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ gap: 8, paddingHorizontal: 20 }}
+        >
+          {FILTERS.map((f) => {
+            const active = activeFilter === f.key;
+            return (
+              <Pressable
+                key={f.key}
+                onPress={() => setActiveFilter(f.key)}
                 style={{
-                  color: active ? '#0F1520' : Colors.t3,
-                  fontSize: 11,
-                  fontFamily: 'IBMPlexMono_600SemiBold',
-                  letterSpacing: 0.72,
-                  textTransform: 'uppercase',
+                  paddingHorizontal: 14,
+                  paddingVertical: 7,
+                  borderRadius: 50,
+                  borderWidth: 1,
+                  borderColor: active ? colors.teal : colors.border,
+                  backgroundColor: active ? colors.tealDim : 'transparent',
                 }}
               >
-                {f.label}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </ScrollView>
+                <Text
+                  style={{
+                    color: active ? colors.teal : colors.t2,
+                    fontSize: 12,
+                    fontFamily: 'IBMPlexSans_600SemiBold',
+                  }}
+                >
+                  {f.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
       </View>
 
       {/* Error state */}
@@ -143,7 +114,7 @@ export function VisitListScreen() {
           style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16 }}
         >
           <Text
-            style={{ color: Colors.t2, fontSize: 13, fontFamily: 'IBMPlexSans_400Regular' }}
+            style={{ color: colors.t2, fontSize: 13, fontFamily: 'IBMPlexSans_400Regular' }}
           >
             Erro ao carregar vistorias
           </Text>
@@ -151,7 +122,7 @@ export function VisitListScreen() {
             onPress={() => refetch()}
             style={{
               borderWidth: 1,
-              borderColor: Colors.border,
+              borderColor: colors.border,
               borderRadius: 6,
               paddingHorizontal: 16,
               paddingVertical: 10,
@@ -159,7 +130,7 @@ export function VisitListScreen() {
           >
             <Text
               style={{
-                color: Colors.t1,
+                color: colors.t1,
                 fontSize: 11,
                 fontFamily: 'IBMPlexMono_600SemiBold',
                 letterSpacing: 0.88,
@@ -196,7 +167,7 @@ export function VisitListScreen() {
             >
               <Text
                 style={{
-                  color: Colors.t3,
+                  color: colors.t3,
                   fontSize: 24,
                   fontFamily: 'IBMPlexMono_400Regular',
                   marginBottom: 8,
@@ -206,7 +177,7 @@ export function VisitListScreen() {
               </Text>
               <Text
                 style={{
-                  color: Colors.t3,
+                  color: colors.t3,
                   fontSize: 10,
                   fontFamily: 'IBMPlexMono_600SemiBold',
                   letterSpacing: 1.2,
@@ -218,7 +189,7 @@ export function VisitListScreen() {
               </Text>
               <Text
                 style={{
-                  color: Colors.t3,
+                  color: colors.t3,
                   fontSize: 12,
                   fontFamily: 'IBMPlexSans_400Regular',
                 }}
@@ -232,7 +203,7 @@ export function VisitListScreen() {
               <View style={{ marginTop: 24 }}>
                 <Text
                   style={{
-                    color: Colors.t3,
+                    color: colors.t3,
                     fontSize: 9,
                     fontFamily: 'IBMPlexMono_600SemiBold',
                     letterSpacing: 1.08,
