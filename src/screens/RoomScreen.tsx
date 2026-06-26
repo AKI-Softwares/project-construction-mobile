@@ -1,10 +1,11 @@
 import { useState, useCallback } from 'react';
-import { ScrollView, View, Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
+import { ScrollView, View, Text, Pressable, ActivityIndicator } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
-import { Colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { Spinner, Button } from '@/components/ui';
+import { AppHeader } from '@/components/ui/AppHeader';
 import { ItemRow } from '@/components/visits/ItemRow';
 import { EvaluationSheet } from '@/components/visits/EvaluationSheet';
 import { useVisitDetail } from '@/hooks/useVisitDetail';
@@ -21,6 +22,7 @@ interface Props {
 export function RoomScreen({ visitId, roomId }: Props) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
   const { data: visit, isLoading, isError, refetch } = useVisitDetail(visitId);
   const [selectedItem, setSelectedItem] = useState<VisitItem | null>(null);
 
@@ -55,16 +57,16 @@ export function RoomScreen({ visitId, roomId }: Props) {
 
   if (isError || !visit) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: Colors.bg1 }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16 }}>
-          <Text style={{ color: Colors.t2, fontSize: 13, fontFamily: 'IBMPlexSans_400Regular' }}>
+          <Text style={{ color: colors.t2, fontSize: 13, fontFamily: 'IBMPlexSans_400Regular' }}>
             Erro ao carregar cômodo
           </Text>
           <Pressable
             onPress={() => refetch()}
-            style={{ borderWidth: 1, borderColor: Colors.border, borderRadius: 6, paddingHorizontal: 16, paddingVertical: 10 }}
+            style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 6, paddingHorizontal: 16, paddingVertical: 10 }}
           >
-            <Text style={{ color: Colors.t1, fontSize: 11, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 0.88, textTransform: 'uppercase' }}>
+            <Text style={{ color: colors.t1, fontSize: 11, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 0.88, textTransform: 'uppercase' }}>
               TENTAR NOVAMENTE
             </Text>
           </Pressable>
@@ -77,16 +79,16 @@ export function RoomScreen({ visitId, roomId }: Props) {
 
   if (!room) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: Colors.bg1 }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16 }}>
-          <Text style={{ color: Colors.t2, fontSize: 13, fontFamily: 'IBMPlexSans_400Regular' }}>
+          <Text style={{ color: colors.t2, fontSize: 13, fontFamily: 'IBMPlexSans_400Regular' }}>
             Cômodo não encontrado
           </Text>
           <Pressable
             onPress={() => router.back()}
-            style={{ borderWidth: 1, borderColor: Colors.border, borderRadius: 6, paddingHorizontal: 16, paddingVertical: 10 }}
+            style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 6, paddingHorizontal: 16, paddingVertical: 10 }}
           >
-            <Text style={{ color: Colors.t1, fontSize: 11, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 0.88, textTransform: 'uppercase' }}>
+            <Text style={{ color: colors.t1, fontSize: 11, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 0.88, textTransform: 'uppercase' }}>
               VOLTAR
             </Text>
           </Pressable>
@@ -105,30 +107,22 @@ export function RoomScreen({ visitId, roomId }: Props) {
   const nextRoom = visit.rooms[roomIndex + 1] ?? null;
 
   return (
-    <View style={styles.root}>
-      <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <Pressable
-          onPress={() => router.back()}
-          style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: 4 }}
-          hitSlop={8}
-        >
-          <Text style={{ color: Colors.amber, fontSize: 13, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 0.6 }}>
-            ← VOLTAR
-          </Text>
-        </Pressable>
+    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+      <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+        <AppHeader title={room?.name ?? 'Cômodo'} />
 
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: 16 }}>
-            <Text style={{ color: Colors.t1, fontSize: 18, fontFamily: 'IBMPlexSans_600SemiBold', marginBottom: 4 }}>
+            <Text style={{ color: colors.t1, fontSize: 18, fontFamily: 'IBMPlexSans_600SemiBold', marginBottom: 4 }}>
               {room.name}
             </Text>
-            <Text style={{ color: Colors.t2, fontSize: 13, fontFamily: 'IBMPlexSans_400Regular' }}>
+            <Text style={{ color: colors.t2, fontSize: 13, fontFamily: 'IBMPlexSans_400Regular' }}>
               {evaluated} de {total} itens avaliados
             </Text>
           </View>
 
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, marginBottom: 8 }}>
-            <Text style={{ color: Colors.t3, fontSize: 9, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 1.08, textTransform: 'uppercase' }}>
+            <Text style={{ color: colors.t3, fontSize: 9, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 1.08, textTransform: 'uppercase' }}>
               ITENS
             </Text>
             {!isFinalized && pendingItems.length > 0 && (
@@ -139,9 +133,9 @@ export function RoomScreen({ visitId, roomId }: Props) {
                 style={{ flexDirection: 'row', alignItems: 'center', gap: 4, opacity: markingAll ? 0.5 : 1 }}
               >
                 {markingAll ? (
-                  <ActivityIndicator size="small" color={Colors.ok} />
+                  <ActivityIndicator size="small" color={colors.ok} />
                 ) : (
-                  <Text style={{ color: Colors.ok, fontSize: 10, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 0.72 }}>
+                  <Text style={{ color: colors.ok, fontSize: 11, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 0.72 }}>
                     ✓ TODOS OK
                   </Text>
                 )}
@@ -149,7 +143,14 @@ export function RoomScreen({ visitId, roomId }: Props) {
             )}
           </View>
 
-          <View style={{ backgroundColor: Colors.bg2, borderRadius: 6, marginHorizontal: 20, overflow: 'hidden' }}>
+          <View style={{
+            backgroundColor: colors.surface,
+            borderRadius: 10,
+            marginHorizontal: 20,
+            overflow: 'hidden',
+            borderWidth: 1,
+            borderColor: colors.border,
+          }}>
             {room.items.map((item) => (
               <ItemRow
                 key={item.id}
@@ -171,7 +172,7 @@ export function RoomScreen({ visitId, roomId }: Props) {
           paddingTop: 12,
           paddingBottom: Math.max(insets.bottom, 16),
           borderTopWidth: 1,
-          borderTopColor: Colors.border,
+          borderTopColor: colors.border,
         }}>
           <Button
             label={nextRoom ? `PRÓXIMO CÔMODO → ${nextRoom.name}` : '← VOLTAR À VISTORIA'}
@@ -196,8 +197,3 @@ export function RoomScreen({ visitId, roomId }: Props) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: Colors.bg1 },
-  safeArea: { flex: 1 },
-});

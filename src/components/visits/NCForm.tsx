@@ -1,6 +1,6 @@
 import { memo, useState } from 'react';
 import { View, Text, TextInput } from 'react-native';
-import { Colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { PhotoGrid } from './PhotoGrid';
 import type { NCDraft } from '@/types/nc.types';
 import type { LocalPhoto } from '@/types/nc.types';
@@ -13,6 +13,7 @@ interface Props {
 
 export const NCForm = memo(function NCForm({ value, onChange, disabled = false }: Props) {
   const [focused, setFocused] = useState(false);
+  const { colors } = useTheme();
 
   const handleAddPhoto = (photo: LocalPhoto) => {
     onChange({ ...value, localPhotos: [...value.localPhotos, photo] });
@@ -34,7 +35,7 @@ export const NCForm = memo(function NCForm({ value, onChange, disabled = false }
     <View style={{ marginTop: 12 }}>
       <Text
         style={{
-          color: Colors.t3,
+          color: colors.t3,
           fontSize: 9,
           fontFamily: 'IBMPlexMono_600SemiBold',
           letterSpacing: 1.08,
@@ -51,16 +52,16 @@ export const NCForm = memo(function NCForm({ value, onChange, disabled = false }
         multiline
         numberOfLines={4}
         placeholder="Descreva a não conformidade..."
-        placeholderTextColor={Colors.t3}
+        placeholderTextColor={colors.t3}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         style={{
-          backgroundColor: Colors.bg3,
+          backgroundColor: colors.inputBg,
           borderWidth: 1,
-          borderColor: focused && !disabled ? Colors.amber : Colors.border,
+          borderColor: focused && !disabled ? colors.teal : 'transparent',
           borderRadius: 6,
           padding: 12,
-          color: Colors.t1,
+          color: colors.t1,
           fontSize: 14,
           fontFamily: 'IBMPlexSans_400Regular',
           minHeight: 96,
@@ -70,7 +71,7 @@ export const NCForm = memo(function NCForm({ value, onChange, disabled = false }
 
       <Text
         style={{
-          color: Colors.t3,
+          color: colors.t3,
           fontSize: 9,
           fontFamily: 'IBMPlexMono_600SemiBold',
           letterSpacing: 1.08,

@@ -7,7 +7,7 @@ import BottomSheet, {
 import type { BottomSheetBackdropProps } from '@gorhom/bottom-sheet';
 import type { AxiosError } from 'axios';
 import { useQueryClient } from '@tanstack/react-query';
-import { Colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 import { showToast } from '@/lib/toast';
 import { Button } from '@/components/ui';
 import { NCForm } from './NCForm';
@@ -52,6 +52,7 @@ export const EvaluationSheet = memo(function EvaluationSheet({
   const sheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['45%', '85%'], []);
   const queryClient = useQueryClient();
+  const { colors } = useTheme();
 
   const [sheetState, setSheetState] = useState<SheetState>('eval');
   const [ncDraft, setNcDraft] = useState<NCDraft>(EMPTY_DRAFT);
@@ -210,15 +211,15 @@ export const EvaluationSheet = memo(function EvaluationSheet({
       enablePanDownToClose
       onChange={(index) => { if (index === -1) handleClose(); }}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: Colors.bg2 }}
-      handleIndicatorStyle={{ backgroundColor: Colors.t3 }}
+      backgroundStyle={{ backgroundColor: colors.surface }}
+      handleIndicatorStyle={{ backgroundColor: colors.t3 }}
     >
       <BottomSheetScrollView
         contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 8, paddingBottom: 40 }}
       >
         <Text
           style={{
-            color: Colors.t1,
+            color: colors.t1,
             fontSize: 16,
             fontFamily: 'IBMPlexSans_600SemiBold',
             marginBottom: 4,
@@ -236,19 +237,19 @@ export const EvaluationSheet = memo(function EvaluationSheet({
                 flex: 1,
                 paddingVertical: 16,
                 borderRadius: 6,
-                backgroundColor: Colors.bg3,
+                backgroundColor: colors.surfacePressed,
                 borderWidth: 1.5,
-                borderColor: item?.status === 'OK' ? Colors.amber : Colors.border,
+                borderColor: item?.status === 'OK' ? colors.teal : colors.border,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
               {isEvalPending && pendingStatus === 'OK' ? (
-                <ActivityIndicator size="small" color={Colors.ok} />
+                <ActivityIndicator size="small" color={colors.ok} />
               ) : (
                 <Text
                   style={{
-                    color: Colors.ok,
+                    color: colors.ok,
                     fontSize: 15,
                     fontFamily: 'IBMPlexSans_600SemiBold',
                   }}
@@ -265,19 +266,19 @@ export const EvaluationSheet = memo(function EvaluationSheet({
                 flex: 1,
                 paddingVertical: 16,
                 borderRadius: 6,
-                backgroundColor: Colors.bg3,
+                backgroundColor: colors.surfacePressed,
                 borderWidth: 1.5,
-                borderColor: item?.status === 'NOK' ? Colors.amber : Colors.border,
+                borderColor: item?.status === 'NOK' ? colors.teal : colors.border,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
               {isEvalPending && pendingStatus === 'NOK' ? (
-                <ActivityIndicator size="small" color={Colors.nc} />
+                <ActivityIndicator size="small" color={colors.nc} />
               ) : (
                 <Text
                   style={{
-                    color: Colors.nc,
+                    color: colors.nc,
                     fontSize: 15,
                     fontFamily: 'IBMPlexSans_600SemiBold',
                   }}
@@ -300,7 +301,7 @@ export const EvaluationSheet = memo(function EvaluationSheet({
         {evalErrorMessage != null && sheetState === 'eval' && (
           <Text
             style={{
-              color: Colors.nc,
+              color: colors.nc,
               fontSize: 12,
               fontFamily: 'IBMPlexSans_400Regular',
               marginTop: 12,

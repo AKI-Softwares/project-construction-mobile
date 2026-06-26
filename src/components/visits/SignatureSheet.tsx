@@ -1,10 +1,10 @@
 import { useRef, useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, useWindowDimensions } from 'react-native';
+import { View, Text, Pressable, ActivityIndicator, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SignatureCanvas, { type SignatureViewRef } from 'react-native-signature-canvas';
 import { reportService } from '@/services/visits.service';
 import { showToast } from '@/lib/toast';
-import { Colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 
 type Props = {
   visitId: number;
@@ -17,6 +17,7 @@ export function SignatureSheet({ visitId, onSaved, onCancel }: Props) {
   const [saving, setSaving] = useState(false);
   const insets = useSafeAreaInsets();
   const { height: screenHeight } = useWindowDimensions();
+  const { colors } = useTheme();
 
   const HEADER_HEIGHT = 52;
   const FOOTER_HEIGHT = 72;
@@ -43,7 +44,7 @@ export function SignatureSheet({ visitId, onSaved, onCancel }: Props) {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+    <View style={{ flex: 1, backgroundColor: colors.bg }}>
       <View style={{
         paddingTop: insets.top + 8,
         paddingBottom: 12,
@@ -52,18 +53,18 @@ export function SignatureSheet({ visitId, onSaved, onCancel }: Props) {
         alignItems: 'center',
         justifyContent: 'space-between',
         borderBottomWidth: 1,
-        borderBottomColor: Colors.border,
+        borderBottomColor: colors.border,
       }}>
-        <TouchableOpacity onPress={onCancel} hitSlop={12}>
-          <Text style={{ fontSize: 16, color: Colors.t2 }}>Cancelar</Text>
-        </TouchableOpacity>
-        <Text style={{ fontSize: 16, fontWeight: '600', color: Colors.t1 }}>Assinar vistoria</Text>
-        <TouchableOpacity onPress={handleClear} hitSlop={12}>
-          <Text style={{ fontSize: 16, color: Colors.t2 }}>Limpar</Text>
-        </TouchableOpacity>
+        <Pressable onPress={onCancel} hitSlop={12}>
+          <Text style={{ fontSize: 16, color: colors.t2 }}>Cancelar</Text>
+        </Pressable>
+        <Text style={{ fontSize: 16, fontWeight: '600', color: colors.t1 }}>Assinar vistoria</Text>
+        <Pressable onPress={handleClear} hitSlop={12}>
+          <Text style={{ fontSize: 16, color: colors.t2 }}>Limpar</Text>
+        </Pressable>
       </View>
 
-      <View style={{ height: canvasHeight }}>
+      <View style={{ height: canvasHeight, backgroundColor: '#fff' }}>
         <SignatureCanvas
           ref={ref}
           onOK={handleOk}
@@ -80,17 +81,17 @@ export function SignatureSheet({ visitId, onSaved, onCancel }: Props) {
         paddingTop: 12,
         paddingBottom: Math.max(insets.bottom, 16),
         borderTopWidth: 1,
-        borderTopColor: Colors.border,
+        borderTopColor: colors.border,
       }}>
         {saving ? (
           <ActivityIndicator size="small" />
         ) : (
-          <TouchableOpacity
+          <Pressable
             onPress={handleConfirm}
-            style={{ backgroundColor: Colors.amber, borderRadius: 12, paddingVertical: 16, alignItems: 'center' }}
+            style={{ backgroundColor: colors.teal, borderRadius: 12, paddingVertical: 16, alignItems: 'center' }}
           >
             <Text style={{ color: '#fff', fontWeight: '600', fontSize: 16 }}>Confirmar assinatura</Text>
-          </TouchableOpacity>
+          </Pressable>
         )}
       </View>
     </View>
