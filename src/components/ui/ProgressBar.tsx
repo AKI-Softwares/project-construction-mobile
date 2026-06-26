@@ -1,20 +1,21 @@
 import { memo } from 'react';
 import { View } from 'react-native';
-import { Colors } from '@/theme/colors';
+import { useTheme } from '@/hooks/useTheme';
 
 interface Props {
-  value: number; // 0–1
+  value: number; // 0–1  ← interface preservada
 }
 
 export const ProgressBar = memo(function ProgressBar({ value }: Props) {
+  const { colors } = useTheme();
   const clamped = Math.min(1, Math.max(0, value));
 
   return (
     <View
       style={{
-        height: 4,
+        height: 5,
         borderRadius: 99,
-        backgroundColor: Colors.bg4,
+        backgroundColor: colors.progressTrack,
         overflow: 'hidden',
       }}
     >
@@ -22,7 +23,7 @@ export const ProgressBar = memo(function ProgressBar({ value }: Props) {
         style={{
           height: '100%',
           width: `${clamped * 100}%`,
-          backgroundColor: Colors.amber,
+          backgroundColor: colors.progressFill,
           borderRadius: 99,
         }}
       />

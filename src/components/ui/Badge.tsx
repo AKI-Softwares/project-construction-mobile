@@ -13,19 +13,17 @@ export function Badge({ label, color, backgroundColor }: BadgeProps) {
         backgroundColor,
         borderWidth: 1,
         borderColor: color,
-        borderRadius: 3,
-        paddingHorizontal: 8,
-        paddingVertical: 2,
+        borderRadius: 50,
+        paddingHorizontal: 10,
+        paddingVertical: 3,
         alignSelf: 'flex-start',
       }}
     >
       <Text
         style={{
           color,
-          fontSize: 10,
-          fontFamily: 'IBMPlexMono_600SemiBold',
-          letterSpacing: 0.6,
-          textTransform: 'uppercase',
+          fontSize: 11,
+          fontFamily: 'IBMPlexSans_600SemiBold',
         }}
       >
         {label}

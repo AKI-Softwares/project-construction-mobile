@@ -1,4 +1,5 @@
 import { ActivityIndicator, Pressable, Text } from 'react-native';
+import { useTheme } from '@/hooks/useTheme';
 
 type Variant = 'primary' | 'outline' | 'ghost';
 
@@ -11,26 +12,6 @@ interface ButtonProps {
   fullWidth?: boolean;
 }
 
-const variantStyles: Record<Variant, { container: string; text: string }> = {
-  primary: {
-    container: 'bg-amber border border-amber',
-    text: 'text-bg1',
-  },
-  outline: {
-    container: 'bg-transparent border border-amber',
-    text: 'text-amber',
-  },
-  ghost: {
-    container: 'bg-transparent border border-border',
-    text: 'text-t2',
-  },
-};
-
-const disabledStyles = {
-  container: 'bg-bg4 border border-bg4',
-  text: 'text-t3',
-};
-
 export function Button({
   label,
   onPress,
@@ -39,30 +20,51 @@ export function Button({
   disabled = false,
   fullWidth = false,
 }: ButtonProps) {
+  const { colors } = useTheme();
   const isDisabled = disabled || loading;
-  const styles = disabled && !loading ? disabledStyles : variantStyles[variant];
+
+  const containerStyle = (() => {
+    if (isDisabled && !loading) return { backgroundColor: colors.border, borderColor: colors.border };
+    if (variant === 'primary') return { backgroundColor: colors.teal, borderColor: colors.teal };
+    if (variant === 'outline') return { backgroundColor: 'transparent', borderColor: colors.teal };
+    return { backgroundColor: 'transparent', borderColor: colors.border };
+  })();
+
+  const textColor = (() => {
+    if (isDisabled && !loading) return colors.t3;
+    if (variant === 'primary') return '#FFFFFF';
+    if (variant === 'outline') return colors.teal;
+    return colors.t2;
+  })();
 
   return (
     <Pressable
       onPress={onPress}
       disabled={isDisabled}
-      className={[
-        'flex-row items-center justify-center rounded-md px-4 py-[14px]',
-        styles.container,
-        fullWidth ? 'w-full' : '',
-      ].join(' ')}
+      style={[
+        {
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: 50,
+          borderWidth: 1,
+          paddingHorizontal: 20,
+          paddingVertical: 14,
+          ...containerStyle,
+        },
+        fullWidth && { width: '100%' },
+      ]}
     >
       {loading ? (
-        <ActivityIndicator
-          size="small"
-          color={variant === 'primary' ? '#0F1520' : '#E8920C'}
-        />
+        <ActivityIndicator size="small" color={variant === 'primary' ? '#FFFFFF' : colors.teal} />
       ) : (
         <Text
-          className={[
-            'text-xs font-sans-bold tracking-widest uppercase',
-            styles.text,
-          ].join(' ')}
+          style={{
+            color: textColor,
+            fontSize: 13,
+            fontFamily: 'IBMPlexSans_600SemiBold',
+            letterSpacing: 0.5,
+          }}
         >
           {label}
         </Text>

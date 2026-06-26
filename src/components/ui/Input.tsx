@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import type { TextInputProps } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 interface InputProps extends TextInputProps {
   label: string;
@@ -10,14 +10,20 @@ interface InputProps extends TextInputProps {
 }
 
 export function Input({ label, error, secureTextEntry, ...props }: InputProps) {
+  const { colors } = useTheme();
   const [focused, setFocused] = useState(false);
   const [visible, setVisible] = useState(false);
-
   const isPassword = secureTextEntry === true;
 
   return (
-    <View className="gap-1.5">
-      <Text className="text-[9px] font-mono-semibold text-t3 uppercase tracking-[0.14em]">
+    <View style={{ gap: 6 }}>
+      <Text
+        style={{
+          color: colors.t2,
+          fontSize: 13,
+          fontFamily: 'IBMPlexSans_400Regular',
+        }}
+      >
         {label}
       </Text>
       <View style={{ position: 'relative' }}>
@@ -26,33 +32,35 @@ export function Input({ label, error, secureTextEntry, ...props }: InputProps) {
           secureTextEntry={isPassword ? !visible : false}
           onFocus={(e) => { setFocused(true); props.onFocus?.(e); }}
           onBlur={(e) => { setFocused(false); props.onBlur?.(e); }}
-          placeholderTextColor={Colors.t3}
-          className="w-full rounded-md bg-bg3 text-sm text-t1"
+          placeholderTextColor={colors.t3}
           style={{
-            borderWidth: 1,
-            borderColor: focused ? Colors.amber : Colors.border,
+            width: '100%',
+            borderRadius: 50,
+            backgroundColor: colors.inputBg,
+            borderWidth: focused ? 1.5 : 1,
+            borderColor: focused ? colors.teal : 'transparent',
+            color: colors.t1,
             fontFamily: 'IBMPlexSans_400Regular',
-            paddingHorizontal: 14,
-            paddingVertical: 12,
-            paddingRight: isPassword ? 44 : 14,
+            fontSize: 15,
+            paddingHorizontal: 20,
+            paddingVertical: 13,
+            paddingRight: isPassword ? 48 : 20,
           }}
         />
         {isPassword && (
           <Pressable
             onPress={() => setVisible((v) => !v)}
             hitSlop={8}
-            style={{ position: 'absolute', right: 12, top: 0, bottom: 0, justifyContent: 'center' }}
+            style={{ position: 'absolute', right: 16, top: 0, bottom: 0, justifyContent: 'center' }}
           >
-            <Ionicons
-              name={visible ? 'eye-off-outline' : 'eye-outline'}
-              size={20}
-              color={Colors.t3}
-            />
+            <Ionicons name={visible ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.t2} />
           </Pressable>
         )}
       </View>
       {error ? (
-        <Text className="text-[11px] text-nc">{error}</Text>
+        <Text style={{ fontSize: 11, color: colors.nc, fontFamily: 'IBMPlexSans_400Regular' }}>
+          {error}
+        </Text>
       ) : null}
     </View>
   );

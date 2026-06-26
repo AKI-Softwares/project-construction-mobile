@@ -4,3 +4,4 @@ export { Spinner } from './Spinner';
 export { Badge } from './Badge';
 export { ProgressBar } from './ProgressBar';
 export { toastConfig } from './Toast';
+export { AppHeader } from './AppHeader';
