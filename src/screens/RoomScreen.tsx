@@ -62,14 +62,7 @@ export function RoomScreen({ visitId, roomId }: Props) {
           <Text style={{ color: colors.t2, fontSize: 13, fontFamily: 'IBMPlexSans_400Regular' }}>
             Erro ao carregar cômodo
           </Text>
-          <Pressable
-            onPress={() => refetch()}
-            style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 6, paddingHorizontal: 16, paddingVertical: 10 }}
-          >
-            <Text style={{ color: colors.t1, fontSize: 11, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 0.88, textTransform: 'uppercase' }}>
-              TENTAR NOVAMENTE
-            </Text>
-          </Pressable>
+          <Button label="TENTAR NOVAMENTE" onPress={() => refetch()} variant="outline" />
         </View>
       </SafeAreaView>
     );
@@ -84,14 +77,7 @@ export function RoomScreen({ visitId, roomId }: Props) {
           <Text style={{ color: colors.t2, fontSize: 13, fontFamily: 'IBMPlexSans_400Regular' }}>
             Cômodo não encontrado
           </Text>
-          <Pressable
-            onPress={() => router.back()}
-            style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 6, paddingHorizontal: 16, paddingVertical: 10 }}
-          >
-            <Text style={{ color: colors.t1, fontSize: 11, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 0.88, textTransform: 'uppercase' }}>
-              VOLTAR
-            </Text>
-          </Pressable>
+          <Button label="VOLTAR" onPress={() => router.back()} variant="outline" />
         </View>
       </SafeAreaView>
     );

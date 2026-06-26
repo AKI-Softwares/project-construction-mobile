@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { NavColors } from '@/theme/colors';
-import { Spinner } from '@/components/ui';
+import { Spinner, Button } from '@/components/ui';
 import { VisitCard } from '@/components/visits';
 import { useMyVisits } from '@/hooks/useMyVisits';
 import { useMyFinalizedVisits } from '@/hooks/useMyFinalizedVisits';
@@ -118,28 +118,7 @@ export function VisitListScreen() {
           >
             Erro ao carregar vistorias
           </Text>
-          <Pressable
-            onPress={() => refetch()}
-            style={{
-              borderWidth: 1,
-              borderColor: colors.border,
-              borderRadius: 6,
-              paddingHorizontal: 16,
-              paddingVertical: 10,
-            }}
-          >
-            <Text
-              style={{
-                color: colors.t1,
-                fontSize: 11,
-                fontFamily: 'IBMPlexMono_600SemiBold',
-                letterSpacing: 0.88,
-                textTransform: 'uppercase',
-              }}
-            >
-              TENTAR NOVAMENTE
-            </Text>
-          </Pressable>
+          <Button label="TENTAR NOVAMENTE" onPress={() => refetch()} variant="outline" />
         </View>
       )}
 

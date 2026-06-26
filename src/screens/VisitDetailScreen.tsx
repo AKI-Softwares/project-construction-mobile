@@ -106,14 +106,7 @@ export function VisitDetailScreen({ id }: Props) {
           <Text style={{ color: colors.t2, fontSize: 13, fontFamily: 'IBMPlexSans_400Regular' }}>
             Erro ao carregar vistoria
           </Text>
-          <Pressable
-            onPress={() => refetch()}
-            style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 6, paddingHorizontal: 16, paddingVertical: 10 }}
-          >
-            <Text style={{ color: colors.t1, fontSize: 11, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 0.88, textTransform: 'uppercase' }}>
-              TENTAR NOVAMENTE
-            </Text>
-          </Pressable>
+          <Button label="TENTAR NOVAMENTE" onPress={() => refetch()} variant="outline" />
         </View>
       </SafeAreaView>
     );
