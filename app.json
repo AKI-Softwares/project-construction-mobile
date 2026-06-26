@@ -6,18 +6,26 @@
     "orientation": "portrait",
     "scheme": "checkobra",
     "userInterfaceStyle": "dark",
+    "icon": "./assets/icon.png",
     "splash": {
+      "image": "./assets/icon.png",
+      "resizeMode": "contain",
       "backgroundColor": "#0F1520"
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "br.com.checkobra.mobile"
+      "bundleIdentifier": "br.com.checkobra.mobile",
+      "icon": "./assets/icon.png"
     },
     "android": {
       "package": "br.com.checkobra.mobile",
       "permissions": [
         "android.permission.RECORD_AUDIO"
-      ]
+      ],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      }
     },
     "web": {
       "bundler": "metro",
