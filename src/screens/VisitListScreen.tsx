@@ -21,13 +21,6 @@ const FILTERS: { key: FilterKey; label: string }[] = [
   { key: 'FINALIZED', label: 'FINALIZADAS' },
 ];
 
-function getGreeting(): string {
-  const hour = new Date().getHours();
-  if (hour < 12) return 'Bom dia';
-  if (hour < 18) return 'Boa tarde';
-  return 'Boa noite';
-}
-
 function getEmptyMessage(filter: FilterKey): string {
   if (filter === 'NOT_STARTED') return 'Nenhuma vistoria pendente';
   if (filter === 'ONGOING') return 'Nenhuma vistoria em andamento';
