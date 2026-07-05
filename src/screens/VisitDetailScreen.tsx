@@ -18,7 +18,7 @@ import { useFinalizeVisit } from '@/hooks/useFinalizeVisit';
 import { useClaimReinspection } from '@/hooks/useClaimReinspection';
 import { reportService } from '@/services/visits.service';
 import { QUERY_KEYS } from '@/lib/constants';
-import { showToast } from '@/lib/toast';
+import { showToast, apiErrorMessage } from '@/lib/toast';
 
 const SIGNED_KEY = 'signed_visit_ids';
 
@@ -85,8 +85,8 @@ export function VisitDetailScreen({ id }: Props) {
       await FileSystem.writeAsStringAsync(path, base64, { encoding: FileSystem.EncodingType.Base64 });
       await Sharing.shareAsync(path, { mimeType: 'application/pdf', dialogTitle: 'Compartilhar Relatório' });
       showToast('success', 'Relatório baixado');
-    } catch {
-      showToast('error', 'Não foi possível gerar o relatório');
+    } catch (err) {
+      showToast('error', apiErrorMessage(err, 'Não foi possível gerar o relatório'));
     } finally {
       setIsDownloading(false);
     }

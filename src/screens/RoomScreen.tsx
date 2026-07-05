@@ -11,7 +11,7 @@ import { EvaluationSheet } from '@/components/visits/EvaluationSheet';
 import { useVisitDetail } from '@/hooks/useVisitDetail';
 import { visitsService } from '@/services/visits.service';
 import { QUERY_KEYS } from '@/lib/constants';
-import { showToast } from '@/lib/toast';
+import { showToast, apiErrorMessage } from '@/lib/toast';
 import type { VisitItem } from '@/types/visit.types';
 
 interface Props {
@@ -46,8 +46,8 @@ export function RoomScreen({ visitId, roomId }: Props) {
       }
       await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.VISIT_DETAIL(visitId) });
       showToast('success', 'Todos os itens marcados como OK');
-    } catch {
-      showToast('error', 'Erro ao marcar itens');
+    } catch (err) {
+      showToast('error', apiErrorMessage(err, 'Erro ao marcar itens como OK'));
     } finally {
       setMarkingAll(false);
     }
@@ -115,13 +115,23 @@ export function RoomScreen({ visitId, roomId }: Props) {
               <Pressable
                 onPress={handleMarkAllOk}
                 disabled={markingAll}
-                hitSlop={8}
-                style={{ flexDirection: 'row', alignItems: 'center', gap: 4, opacity: markingAll ? 0.5 : 1 }}
+                style={({ pressed }) => ({
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 6,
+                  backgroundColor: pressed ? colors.tealDim : colors.ok + '22',
+                  borderWidth: 1,
+                  borderColor: colors.ok,
+                  borderRadius: 50,
+                  paddingHorizontal: 12,
+                  paddingVertical: 6,
+                  opacity: markingAll ? 0.5 : 1,
+                })}
               >
                 {markingAll ? (
                   <ActivityIndicator size="small" color={colors.ok} />
                 ) : (
-                  <Text style={{ color: colors.ok, fontSize: 11, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 0.72 }}>
+                  <Text style={{ color: colors.ok, fontSize: 12, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 0.5 }}>
                     ✓ TODOS OK
                   </Text>
                 )}

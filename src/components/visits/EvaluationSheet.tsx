@@ -8,7 +8,7 @@ import type { BottomSheetBackdropProps } from '@gorhom/bottom-sheet';
 import type { AxiosError } from 'axios';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTheme } from '@/hooks/useTheme';
-import { showToast } from '@/lib/toast';
+import { showToast, apiErrorMessage } from '@/lib/toast';
 import { Button } from '@/components/ui';
 import { NCForm } from './NCForm';
 import { useEvaluateItem } from '@/hooks/useEvaluateItem';
@@ -170,8 +170,8 @@ export const EvaluationSheet = memo(function EvaluationSheet({
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.VISIT_DETAIL(visitId) });
       showToast('success', 'Não conformidade salva');
       onClose();
-    } catch {
-      showToast('error', 'Erro ao salvar. Tente novamente.');
+    } catch (err) {
+      showToast('error', apiErrorMessage(err, 'Erro ao salvar NC. Tente novamente.'));
     } finally {
       setIsSaving(false);
     }
