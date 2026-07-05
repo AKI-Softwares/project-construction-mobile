@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "357996140873",
+    "project_id": "checkobra-58d7f",
+    "storage_bucket": "checkobra-58d7f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:357996140873:android:3145a74997bdac77272298",
+        "android_client_info": {
+          "package_name": "br.com.checkobra.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBh93cikg5GslnW7iuACL45xZavXCqPgOw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -29,7 +29,10 @@ export function usePushNotifications() {
       const { status } = await Notifications.requestPermissionsAsync();
       if (status !== 'granted') return;
 
-      const projectId = Constants.expoConfig?.extra?.projectId as string;
+      const projectId = (
+        Constants.easConfig?.projectId ??
+        Constants.expoConfig?.extra?.eas?.projectId
+      ) as string;
       const pushToken = await Notifications.getExpoPushTokenAsync({ projectId });
       await pushService.saveToken(pushToken.data).catch(() => {});
       registered = true;
