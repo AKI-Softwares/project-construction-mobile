@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ScrollView, View, Text, Pressable, Modal, ActivityIndicator } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
-import * as SecureStore from 'expo-secure-store';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTheme } from '@/hooks/useTheme';
 import { AppHeader } from '@/components/ui/AppHeader';
@@ -20,23 +19,6 @@ import { reportService } from '@/services/visits.service';
 import { QUERY_KEYS } from '@/lib/constants';
 import { showToast, apiErrorMessage } from '@/lib/toast';
 
-const SIGNED_KEY = 'signed_visit_ids';
-
-async function getSignedIds(): Promise<number[]> {
-  try {
-    const raw = await SecureStore.getItemAsync(SIGNED_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-async function markSigned(id: number): Promise<void> {
-  const ids = await getSignedIds();
-  if (!ids.includes(id)) {
-    await SecureStore.setItemAsync(SIGNED_KEY, JSON.stringify([...ids, id]));
-  }
-}
 
 interface Props {
   id: number;
@@ -55,13 +37,6 @@ export function VisitDetailScreen({ id }: Props) {
   const [isDownloading, setIsDownloading] = useState(false);
   const [persistedSigned, setPersistedSigned] = useState(false);
 
-  useEffect(() => {
-    setPersistedSigned(false);
-    getSignedIds().then((ids) => {
-      if (ids.includes(id)) setPersistedSigned(true);
-    });
-  }, [id]);
-
   const handleStart = useCallback(() => startVisit(), [startVisit]);
   const handleFinalize = useCallback(() => finalizeVisit(), [finalizeVisit]);
   const handleClaim = useCallback(() => claimReinspection(), [claimReinspection]);
@@ -70,7 +45,6 @@ export function VisitDetailScreen({ id }: Props) {
     (_url: string) => {
       setPersistedSigned(true);
       setShowSignature(false);
-      markSigned(id);
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.VISIT_DETAIL(id) });
       showToast('success', 'Assinatura salva');
     },
