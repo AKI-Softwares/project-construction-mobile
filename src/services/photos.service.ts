@@ -11,7 +11,10 @@ export const photosService = {
       type: photo.mimeType ?? 'image/jpeg',
     } as unknown as Blob);
     return api
-      .post<Photo>(`/non-conformities/${nonConformityId}/photos`, formData)
+      .post<Photo>(`/non-conformities/${nonConformityId}/photos`, formData, {
+        headers: { 'Content-Type': undefined },
+        timeout: 60000,
+      })
       .then((r) => r.data);
   },
 

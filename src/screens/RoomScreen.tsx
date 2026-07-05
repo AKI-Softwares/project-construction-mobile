@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { ScrollView, View, Text, Pressable, ActivityIndicator } from 'react-native';
+import { ScrollView, View, Text } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
@@ -107,37 +107,21 @@ export function RoomScreen({ visitId, roomId }: Props) {
             </Text>
           </View>
 
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, marginBottom: 8 }}>
-            <Text style={{ color: colors.t3, fontSize: 9, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 1.08, textTransform: 'uppercase' }}>
-              ITENS
-            </Text>
-            {!isFinalized && pendingItems.length > 0 && (
-              <Pressable
+          <Text style={{ color: colors.t3, fontSize: 9, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 1.08, textTransform: 'uppercase', paddingHorizontal: 20, marginBottom: 8 }}>
+            ITENS
+          </Text>
+
+          {!isFinalized && pendingItems.length > 0 && (
+            <View style={{ paddingHorizontal: 20, marginBottom: 12 }}>
+              <Button
+                label="✓  MARCAR TODOS COMO OK"
                 onPress={handleMarkAllOk}
-                disabled={markingAll}
-                style={({ pressed }) => ({
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 6,
-                  backgroundColor: pressed ? colors.tealDim : colors.ok + '22',
-                  borderWidth: 1,
-                  borderColor: colors.ok,
-                  borderRadius: 50,
-                  paddingHorizontal: 12,
-                  paddingVertical: 6,
-                  opacity: markingAll ? 0.5 : 1,
-                })}
-              >
-                {markingAll ? (
-                  <ActivityIndicator size="small" color={colors.ok} />
-                ) : (
-                  <Text style={{ color: colors.ok, fontSize: 12, fontFamily: 'IBMPlexMono_600SemiBold', letterSpacing: 0.5 }}>
-                    ✓ TODOS OK
-                  </Text>
-                )}
-              </Pressable>
-            )}
-          </View>
+                loading={markingAll}
+                variant="outline"
+                fullWidth
+              />
+            </View>
+          )}
 
           <View style={{
             backgroundColor: colors.surface,
