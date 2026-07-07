@@ -4,7 +4,6 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
-import { useQueryClient } from '@tanstack/react-query';
 import { useTheme } from '@/hooks/useTheme';
 import { AppHeader } from '@/components/ui/AppHeader';
 import { Spinner, Button, ProgressBar } from '@/components/ui';
@@ -16,7 +15,6 @@ import { useStartVisit } from '@/hooks/useStartVisit';
 import { useFinalizeVisit } from '@/hooks/useFinalizeVisit';
 import { useClaimReinspection } from '@/hooks/useClaimReinspection';
 import { reportService } from '@/services/visits.service';
-import { QUERY_KEYS } from '@/lib/constants';
 import { showToast, apiErrorMessage } from '@/lib/toast';
 
 
@@ -30,12 +28,12 @@ export function VisitDetailScreen({ id }: Props) {
   const { colors } = useTheme();
   const { data: visit, isLoading, isError, refetch } = useVisitDetail(id);
   const { mutate: startVisit, isPending: isStartPending } = useStartVisit(id);
-  const { mutate: finalizeVisit, isPending: isFinalizePending } = useFinalizeVisit(id);
+  const { mutate: finalizeVisit, isPending: isFinalizePending } = useFinalizeVisit(id, {
+    onSuccess: () => setShowSignature(true),
+  });
   const { mutate: claimReinspection, isPending: isClaimPending } = useClaimReinspection(id);
-  const queryClient = useQueryClient();
   const [showSignature, setShowSignature] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
-  const [persistedSigned, setPersistedSigned] = useState(false);
 
   const handleStart = useCallback(() => startVisit(), [startVisit]);
   const handleFinalize = useCallback(() => finalizeVisit(), [finalizeVisit]);
@@ -43,12 +41,11 @@ export function VisitDetailScreen({ id }: Props) {
 
   const handleSignatureSaved = useCallback(
     (_url: string) => {
-      setPersistedSigned(true);
       setShowSignature(false);
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.VISIT_DETAIL(id) });
       showToast('success', 'Assinatura salva');
+      router.replace('/(app)/(tabs)/visits' as any);
     },
-    [id, queryClient],
+    [router],
   );
 
   const handleDownloadReport = useCallback(async () => {
@@ -195,7 +192,7 @@ export function VisitDetailScreen({ id }: Props) {
 
       {isFinalized && (
         <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: Math.max(insets.bottom, 16), borderTopWidth: 1, borderTopColor: colors.border, gap: 10 }}>
-          {!(persistedSigned || visit.signatureUrl) ? (
+          {!visit.signatureUrl ? (
             <Button label="ASSINAR VISTORIA" onPress={() => setShowSignature(true)} fullWidth />
           ) : (
             <Pressable
