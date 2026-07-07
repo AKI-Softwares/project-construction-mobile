@@ -136,6 +136,10 @@ export function VisitListScreen() {
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24, flexGrow: 1 }}
           refreshing={(isFetching && !isLoading) || (showingFinalized && isFetchingFinalized && !isLoadingFinalized)}
           onRefresh={() => { refetch(); if (showingFinalized) refetchFinalized(); }}
+          removeClippedSubviews
+          initialNumToRender={10}
+          maxToRenderPerBatch={10}
+          windowSize={8}
           renderItem={({ item }) => (
             <VisitCard
               visit={item}
