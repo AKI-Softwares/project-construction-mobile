@@ -6,7 +6,7 @@ export function useVisitDetail(id: number) {
   return useQuery({
     queryKey: QUERY_KEYS.VISIT_DETAIL(id),
     queryFn: () => visitsService.getVisitById(id),
-    staleTime: 0,
+    staleTime: 30_000,
     refetchInterval: (query) =>
       query.state.data?.status === 'ONGOING' ? 30_000 : false,
   });
