@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTheme } from '@/hooks/useTheme';
 import { NavColors } from '@/theme/colors';
 import { Spinner, Button } from '@/components/ui';
@@ -10,6 +11,8 @@ import { useMyVisits } from '@/hooks/useMyVisits';
 import { useMyFinalizedVisits } from '@/hooks/useMyFinalizedVisits';
 import { useAvailableReinspections } from '@/hooks/useAvailableReinspections';
 import { useAuthStore } from '@/store/auth.store';
+import { visitsService } from '@/services/visits.service';
+import { QUERY_KEYS } from '@/lib/constants';
 import type { VisitStatus } from '@/types/visit.types';
 
 type FilterKey = 'all' | VisitStatus;
@@ -30,7 +33,17 @@ function getEmptyMessage(filter: FilterKey): string {
 
 export function VisitListScreen() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { colors } = useTheme();
+
+  const handleVisitPress = useCallback((id: number) => {
+    queryClient.prefetchQuery({
+      queryKey: QUERY_KEYS.VISIT_DETAIL(id),
+      queryFn: () => visitsService.getVisitById(id),
+      staleTime: 30_000,
+    });
+    router.push(`/(app)/visits/${String(id)}` as any);
+  }, [queryClient, router]);
   const user = useAuthStore((s) => s.user);
   const [activeFilter, setActiveFilter] = useState<FilterKey>('all');
   const { data: visits = [], isLoading, isError, isFetching, refetch } = useMyVisits();
@@ -126,7 +139,7 @@ export function VisitListScreen() {
           renderItem={({ item }) => (
             <VisitCard
               visit={item}
-              onPress={() => router.push(`/(app)/visits/${String(item.id)}` as any)}
+              onPress={() => handleVisitPress(item.id)}
             />
           )}
           ListEmptyComponent={
@@ -189,7 +202,7 @@ export function VisitListScreen() {
                   <VisitCard
                     key={item.id}
                     visit={item}
-                    onPress={() => router.push(`/(app)/visits/${String(item.id)}` as any)}
+                    onPress={() => handleVisitPress(item.id)}
                   />
                 ))}
               </View>
