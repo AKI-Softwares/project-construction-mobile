@@ -109,7 +109,7 @@ export function VisitDetailScreen({ id }: Props) {
       />
     </Modal>
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top']}>
-      <AppHeader title={`Apt. ${visit.apartment.identifier}`} />
+      <AppHeader title={`Apt. ${visit.apartment.identifier}`} backDisabled={isFinalized && !visit.signatureUrl} />
 
       <ScrollView
         contentContainerStyle={{ paddingBottom: showBottomBar ? 0 : 24 }}
