@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { ScrollView, View, Text } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -27,23 +27,24 @@ export function RoomScreen({ visitId, roomId }: Props) {
   const [selectedItem, setSelectedItem] = useState<VisitItem | null>(null);
 
   const handleItemPress = useCallback((item: VisitItem) => {
-    refetch();
     setSelectedItem(item);
-  }, [refetch]);
+  }, []);
   const handleSheetClose = useCallback(() => setSelectedItem(null), []);
 
   const queryClient = useQueryClient();
   const [markingAll, setMarkingAll] = useState(false);
 
-  const pendingItems = visit?.rooms.find((r) => r.id === roomId)?.items.filter((i) => i.status === null) ?? [];
+  const room = useMemo(() => visit?.rooms.find((r) => r.id === roomId), [visit, roomId]);
+  const roomIndex = useMemo(() => visit?.rooms.findIndex((r) => r.id === roomId) ?? -1, [visit, roomId]);
+  const pendingItems = useMemo(() => room?.items.filter((i) => i.status === null) ?? [], [room]);
 
   const handleMarkAllOk = async () => {
     if (pendingItems.length === 0) return;
     setMarkingAll(true);
     try {
-      for (const item of pendingItems) {
-        await visitsService.evaluateItem(visitId, item.id, 'OK');
-      }
+      await Promise.all(
+        pendingItems.map((item) => visitsService.evaluateItem(visitId, item.id, 'OK')),
+      );
       await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.VISIT_DETAIL(visitId) });
       showToast('success', 'Todos os itens marcados como OK');
     } catch (err) {
@@ -68,8 +69,6 @@ export function RoomScreen({ visitId, roomId }: Props) {
     );
   }
 
-  const room = visit.rooms.find((r) => r.id === roomId);
-
   if (!room) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
@@ -89,7 +88,6 @@ export function RoomScreen({ visitId, roomId }: Props) {
 
   const isOngoing = visit.status === 'ONGOING';
   const allEvaluated = room.items.length > 0 && room.items.every((i) => i.status !== null);
-  const roomIndex = visit.rooms.findIndex((r) => r.id === roomId);
   const nextRoom = visit.rooms[roomIndex + 1] ?? null;
 
   return (

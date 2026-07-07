@@ -6,9 +6,10 @@ import { NavColors } from '@/theme/colors';
 interface Props {
   title: string;
   onBack?: () => void;
+  backDisabled?: boolean;
 }
 
-export function AppHeader({ title, onBack }: Props) {
+export function AppHeader({ title, onBack, backDisabled }: Props) {
   const router = useRouter();
 
   return (
@@ -23,9 +24,9 @@ export function AppHeader({ title, onBack }: Props) {
       }}
     >
       <Pressable
-        onPress={onBack ?? (() => router.back())}
+        onPress={backDisabled ? undefined : (onBack ?? (() => router.back()))}
         hitSlop={12}
-        style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
+        style={{ flexDirection: 'row', alignItems: 'center', gap: 4, opacity: backDisabled ? 0.3 : 1 }}
       >
         <Ionicons name="chevron-back" size={20} color={NavColors.teal} />
         <Text
