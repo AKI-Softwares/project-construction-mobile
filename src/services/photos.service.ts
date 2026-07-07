@@ -8,6 +8,7 @@ interface UploadParams {
   apiKey: string;
   cloudName: string;
   folder: string;
+  transformation: string;
 }
 
 interface CloudinaryUploadResult {
@@ -28,6 +29,7 @@ async function uploadToCloudinary(params: UploadParams, photo: LocalPhoto): Prom
   formData.append('timestamp', String(params.timestamp));
   formData.append('signature', params.signature);
   formData.append('folder', params.folder);
+  formData.append('transformation', params.transformation);
 
   const response = await fetch(
     `https://api.cloudinary.com/v1_1/${params.cloudName}/image/upload`,
