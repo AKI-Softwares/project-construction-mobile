@@ -161,10 +161,12 @@ export const EvaluationSheet = memo(function EvaluationSheet({
         await Promise.all(ncDraft.localPhotos.map((photo) => photosService.add(nc.id, photo)));
       } else {
         const ncId = item.nonConformity.id;
-        if (ncDraft.description.trim() !== item.nonConformity.description) {
-          await nonConformitiesService.patch(ncId, ncDraft.description.trim());
-        }
-        await Promise.all(ncDraft.removedPhotoIds.map((photoId) => photosService.remove(ncId, photoId)));
+        const descriptionChanged = ncDraft.description.trim() !== item.nonConformity.description;
+        // patch + removals em paralelo (independentes entre si); additions após removals para respeitar limite de 5 fotos
+        await Promise.all([
+          descriptionChanged ? nonConformitiesService.patch(ncId, ncDraft.description.trim()) : Promise.resolve(),
+          Promise.all(ncDraft.removedPhotoIds.map((photoId) => photosService.remove(ncId, photoId))),
+        ]);
         await Promise.all(ncDraft.localPhotos.map((photo) => photosService.add(ncId, photo)));
       }
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.VISIT_DETAIL(visitId) });
