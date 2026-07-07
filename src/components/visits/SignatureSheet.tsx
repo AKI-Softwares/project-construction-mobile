@@ -9,7 +9,7 @@ import { useTheme } from '@/hooks/useTheme';
 type Props = {
   visitId: number;
   onSaved: (signatureUrl: string) => void;
-  onCancel: () => void;
+  onCancel?: () => void;
 };
 
 export function SignatureSheet({ visitId, onSaved, onCancel }: Props) {
@@ -55,9 +55,13 @@ export function SignatureSheet({ visitId, onSaved, onCancel }: Props) {
         borderBottomWidth: 1,
         borderBottomColor: colors.border,
       }}>
-        <Pressable onPress={onCancel} hitSlop={12}>
-          <Text style={{ fontSize: 16, color: colors.t2 }}>Cancelar</Text>
-        </Pressable>
+        {onCancel ? (
+          <Pressable onPress={onCancel} hitSlop={12}>
+            <Text style={{ fontSize: 16, color: colors.t2 }}>Cancelar</Text>
+          </Pressable>
+        ) : (
+          <View style={{ width: 60 }} />
+        )}
         <Text style={{ fontSize: 16, fontWeight: '600', color: colors.t1 }}>Assinar vistoria</Text>
         <Pressable onPress={handleClear} hitSlop={12}>
           <Text style={{ fontSize: 16, color: colors.t2 }}>Limpar</Text>

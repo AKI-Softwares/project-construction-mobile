@@ -29,10 +29,11 @@ export function VisitDetailScreen({ id }: Props) {
   const { data: visit, isLoading, isError, refetch } = useVisitDetail(id);
   const { mutate: startVisit, isPending: isStartPending } = useStartVisit(id);
   const { mutate: finalizeVisit, isPending: isFinalizePending } = useFinalizeVisit(id, {
-    onSuccess: () => setShowSignature(true),
+    onSuccess: () => { setSignatureRequired(true); setShowSignature(true); },
   });
   const { mutate: claimReinspection, isPending: isClaimPending } = useClaimReinspection(id);
   const [showSignature, setShowSignature] = useState(false);
+  const [signatureRequired, setSignatureRequired] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
   const handleStart = useCallback(() => startVisit(), [startVisit]);
@@ -100,11 +101,11 @@ export function VisitDetailScreen({ id }: Props) {
 
   return (
     <>
-    <Modal visible={showSignature} animationType="slide" onRequestClose={() => setShowSignature(false)}>
+    <Modal visible={showSignature} animationType="slide" onRequestClose={signatureRequired ? undefined : () => setShowSignature(false)}>
       <SignatureSheet
         visitId={id}
         onSaved={handleSignatureSaved}
-        onCancel={() => setShowSignature(false)}
+        onCancel={signatureRequired ? undefined : () => setShowSignature(false)}
       />
     </Modal>
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top']}>
@@ -193,7 +194,7 @@ export function VisitDetailScreen({ id }: Props) {
       {isFinalized && (
         <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: Math.max(insets.bottom, 16), borderTopWidth: 1, borderTopColor: colors.border, gap: 10 }}>
           {!visit.signatureUrl ? (
-            <Button label="ASSINAR VISTORIA" onPress={() => setShowSignature(true)} fullWidth />
+            <Button label="ASSINAR VISTORIA" onPress={() => { setSignatureRequired(false); setShowSignature(true); }} fullWidth />
           ) : (
             <Pressable
               onPress={handleDownloadReport}
