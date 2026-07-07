@@ -11,7 +11,6 @@ export function useFinalizeVisit(visitId: number) {
   return useMutation({
     mutationFn: () => visitsService.finalizeVisit(visitId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.VISIT_DETAIL(visitId) });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.VISITS_MINE });
       showToast('success', 'Vistoria finalizada');
       router.replace('/(app)/(tabs)/visits' as any);
