@@ -53,7 +53,7 @@ export function VisitListScreen() {
     isFetching: isFetchingFinalized,
     refetch: refetchFinalized,
   } = useMyFinalizedVisits(activeFilter === 'FINALIZED' || activeFilter === 'all');
-  const { data: availableReinspections = [] } = useAvailableReinspections();
+  const { data: availableReinspections = [] } = useAvailableReinspections(!!user?.company);
 
   const filtered = useMemo(() => {
     if (activeFilter === 'FINALIZED') return finalizedVisits;
